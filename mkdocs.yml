@@ -1,6 +1,6 @@
-site_name: 'ESIIL Working Group OASIS'
-site_description: 'Central resource for ESIIL working groups'
-site_author: Ty Tuff
+site_name: 'AI for Natural Methane'
+site_description: 'ESIIL working group: Harmonizing Natural Methane Datasets using Knowledge Guided Machine Learning'
+site_author: Licheng Liu
 site_url: https://cu-esiil.github.io/Working_group_home
 
 # Repository
