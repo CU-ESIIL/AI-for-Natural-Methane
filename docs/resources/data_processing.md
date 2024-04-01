@@ -16,13 +16,20 @@ This proposed data synthesis will heavily rely on developing, pretraining, and t
 
 References:
 Beucler, Tom, Michael Pritchard, Stephan Rasp, Jordan Ott, Pierre Baldi, and Pierre Gentine. 2021. “Enforcing Analytic Constraints in Neural Networks Emulating Physical Systems.” Physical Review Letters 126 (9): 098302.
+
 Daw, Arka, Anuj Karpatne, William Watkins, Jordan Read, and Vipin Kumar. 2017. “Physics-Guided Neural Networks (PGNN): An Application in Lake Temperature Modeling.” arXiv [cs.LG]. arXiv. http://arxiv.org/abs/1710.11431.
+
 ElGhawi, Reda, Basil Kraft, Christian Reimers, Markus Reichstein, Marco Körner, Pierre Gentine, and Alexander J. Winkler. 2022. “Hybrid Modeling of Evapotranspiration: Inferring Stomatal and Aerodynamic Resistances Using Combined Physics-Based and Machine Learning.” Earth and Space Science Open Archive. https://doi.org/10.1002/essoar.10512258.1.
+
 Irrgang, Christopher, Niklas Boers, Maike Sonnewald, Elizabeth A. Barnes, Christopher Kadow, Joanna Staneva, and Jan Saynisch-Wagner. 2021. “Towards Neural Earth System Modelling by Integrating Artificial Intelligence in Earth System Science.” Nature Machine Intelligence 3 (8): 667–74.
+
 Karpatne, Anuj, Ramakrishnan Kannan, and Vipin Kumar. 2022. Knowledge Guided Machine Learning: Accelerating Discovery Using Scientific Knowledge and Data. CRC Press.
 Kraft, Basil, Martin Jung, Marco Körner, Sujan Koirala, and Markus Reichstein. 2022. “Towards Hybrid Modeling of the Global Hydrological Cycle.” Hydrology and Earth System Sciences 26 (6): 1579–1614.
+
 Liu, Licheng, Shaoming Xu, Jinyun Tang, Kaiyu Guan, Timothy J. Griffis, Matthew D. Erickson, Alexander L. Frie, et al. 2022. “KGML-Ag: A Modeling Framework of Knowledge-Guided Machine Learning to Simulate Agroecosystems: A Case Study of Estimating N 2 O Emission Using Data from Mesocosm Experiments.” Geoscientific Model Development 15 (7): 2839–58.
+
 Read, Jordan S., Xiaowei Jia, Jared Willard, Alison P. Appling, Jacob A. Zwart, Samantha K. Oliver, Anuj Karpatne, et al. 2019. “Process‐guided Deep Learning Predictions of Lake Water Temperature.” Water Resources Research 55 (11): 9173–90.
+
 Willard, Jared, Xiaowei Jia, Shaoming Xu, Michael Steinbach, and Vipin Kumar. 2023. “Integrating Scientific Knowledge with Machine Learning for Engineering and Environmental Systems.” ACM Computing Surveys. https://doi.org/10.1145/3514228.
 
 
