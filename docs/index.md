@@ -1,22 +1,26 @@
-# [Your Working Group Name]
+# AI for Natural Methane
 
-Welcome to the [Your Working Group Name] repository, part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository serves as the central hub for our working group, hosting our project description, proposals, member bios, codebase, and more.
+Welcome to the "AI for Natural Methane" repository, part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository serves as the central hub for our working group, hosting our project description, proposals, member bios, codebase, and more.
 
 ## Our Project
 
-[Provide a brief overview of your project here. Explain what you aim to achieve, the importance of your project, and its expected impact.]
+Harmonizing Natural Methane Datasets using Knowledge Guided Machine Learning
+
+Atmospheric methane (CH4) is the second most powerful greenhouse gas after carbon dioxide and grew at the fastest rate ever recorded in 2020-2022. Slowing or reversing the accelerating growth in atmospheric CH4 will require an improved understanding of the global CH4 budget, which is currently underconstrained. Natural CH4 budgets are responsible for ~40% of the total global CH4 budgets but remain the most uncertain factor. This AI for natural CH4 working group aims to build a novel framework that integrates scientific knowledge and machine learning to harmonize simulated and observed datasets from global wetlands and soil sinks to quantify the spatial and temporal changes of global natural CH4 fluxes. Specifically, we will harmonize every possible form of the global natural CH4 datasets, including field-based CH4 fluxes from chamber and eddy-covariance measurements and simulated CH4 fluxes from bottom-up process-based models and top-down atmospheric assimilation models. As an output of this working group, we will generate and publicly share harmonized measurement datasets and global natural CH4 flux products from 1980 to present.
+
 
 ## Project Proposal
 
-[Link to the detailed project proposal document or include the proposal directly in the repository. This should outline the goals, methodologies, anticipated challenges, and projected timelines.]
+[Link to the detailed project proposal document or include the proposal directly in the repository. This should outline the goals, methodologies, anticipated challenges, and projected timelines.] CHANGE TO A PDF LINK LATER
 
 ## Group Members
 
 [List the names and a brief description of each group member, possibly linking to their personal or professional web pages.]
 
-- **Member 1**: Brief description or role within the group.
-- **Member 2**: Brief description or role within the group.
-- ...
+- **Member 1**: Youmi Oh, University of Colorado Boulder, PI
+- **Member 2**: Sparkle Malone, Yale University, Co-PI, Gavin McNicol (University of Illinois Chicago), Licheng Liu (University of Minnesota)
+- **Member 3**: Gavin McNicol, University of Illinois Chicago, Co-PI
+- **Member 3**: Licheng Liu, University of Minnesota, Co-PI, tech lead
 
 ## Code Repository
 
