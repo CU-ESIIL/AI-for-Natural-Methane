@@ -4,8 +4,8 @@ site_author: Licheng Liu
 site_url: https://cu-esiil.github.io/AI-for-Natural-Methane/
 
 # Repository
-repo_name: Working-group-home
-repo_url: https://github.com/CU-ESIIL/Working_group_oasis
+repo_name: AI-for-Natural-Methane
+repo_url: https://github.com/CU-ESIIL/AI-for-Natural-Methane
 edit_uri: edit/main/docs/
 # Copyright
 copyright: 'Copyright &copy; 2023 University of Colorado Boulder'
