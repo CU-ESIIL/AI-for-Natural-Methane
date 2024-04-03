@@ -20,7 +20,7 @@ Atmospheric methane (CH4) is the second most powerful greenhouse gas after carbo
 - **Member 1**: Youmi Oh, University of Colorado Boulder, PI
 - **Member 2**: Sparkle Malone, Yale University, Co-PI, Gavin McNicol (University of Illinois Chicago), Licheng Liu (University of Minnesota)
 - **Member 3**: Gavin McNicol, University of Illinois Chicago, Co-PI
-- **Member 3**: Licheng Liu, University of Minnesota, Co-PI, tech lead
+- **Member 4**: Licheng Liu, University of Minnesota, Co-PI, tech lead
 
 ## Code Repository
 
