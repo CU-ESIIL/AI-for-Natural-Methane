@@ -22,13 +22,7 @@ Atmospheric methane (CH4) is the second most powerful greenhouse gas after carbo
 - **Member 3**: Gavin McNicol, University of Illinois Chicago, Co-PI
 - **Member 4**: Licheng Liu, University of Minnesota, Co-PI, tech lead
 
-## Code Repository
-
-This section of the repository will include all the code developed for the project. You can structure it as follows:
-
-- **Analysis Code**: Scripts for data analysis, statistical modeling, etc.
-- **Data Processing**: Scripts for cleaning, merging, and managing datasets.
-- **Visualization**: Code for creating figures, charts, and interactive visualizations.
+## Code Repository: <https://github.com/CU-ESIIL/AI-for-Natural-Methane>
 
 ## Meeting Notes and Agendas
 
