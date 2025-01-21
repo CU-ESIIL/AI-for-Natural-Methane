@@ -12,7 +12,7 @@ Welcome to the **[Your Working Group Name]** repository, an integral part of the
 - Find comprehensive guides, tutorials, and additional resources.
 
 ## Project Proposal
-[Link to the detailed project proposal document or include it directly in the repository. Outline the goals, methodologies, anticipated challenges, and projected timelines.]
+<https://drive.google.com/file/d/1ZbBGjVluDXpoL1RCdHnk7FJqvz5pHdtu/view?usp=drive_link>
 
 ## Group Members
 - Member 1: Brief description or role within the group.
