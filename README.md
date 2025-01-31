@@ -10,8 +10,11 @@ Welcome to the AI for Natural Methane Working Group (AI4NM) repository, an integ
 - Access detailed documentation on our [GitHub Pages site](https://cu-esiil.github.io/AI-for-Natural-Methane/).
 - Find comprehensive guides, tutorials, and additional resources.
 
+## Project Proposal
+[<https://drive.google.com/file/d/1ZbBGjVluDXpoL1RCdHnk7FJqvz5pHdtu/view?usp=drive_link>]
+
 ## Project Poster
-[<https://drive.google.com/file/d/1ZbBGjVluDXpoL1RCdHnk7FJqvz5pHdtu/view?usp=drive_link>](https://drive.google.com/file/d/16X5Xw-yC25NDlBHGlQiNzXGygjl5bGMY/view)
+[<https://drive.google.com/file/d/16X5Xw-yC25NDlBHGlQiNzXGygjl5bGMY/view>]
 
 ## Group Members
 - Member 1: Youmi Oh, University of Colorado Boulder and NOAA Global Monitoring Laboratory, co-PI
