@@ -1,25 +1,25 @@
-[![DOI](https://zenodo.org/badge/780492388.svg)](https://zenodo.org/doi/10.5281/zenodo.11167904)
+# [ESIIL AI for Natural Methane Working Group (AI4NM)]
 
-# [Your Working Group Name]
-
-Welcome to the **[Your Working Group Name]** repository, an integral part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository is the central hub for our working group, encompassing our project overview, proposals, team member information, codebase, and more.
+Welcome to the AI for Natural Methane Working Group (AI4NM) repository, an integral part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository is the central hub for our working group, encompassing our project overview, proposals, team member information, codebase, and more.
 
 ## Our Project
-[Provide a brief overview of your project here. Describe what you aim to achieve, the importance of your project, and its expected impact.]
+- Atmospheric methane (CH4) grew at the fastest rate ever recorded in 2020-2022. Slowing or reversing the accelerating growth in atmospheric CH4 will require an improved understanding of the global CH4 budget. Natural CH4 emissions are responsible for ~40% of the total global CH4 budget but remain the most uncertain factor. 
+- Our working group aims to build a novel Knowledge-Guided Machine Learning (KGML) framework that integrates scientific knowledge from process-based models and machine learning to harmonize simulated and observed datasets from global wetlands and soil sinks.
 
 ## Documentation
-- Access detailed documentation on our [GitHub Pages site](https://your-gh-pages-url/).
+- Access detailed documentation on our [GitHub Pages site](https://cu-esiil.github.io/AI-for-Natural-Methane/).
 - Find comprehensive guides, tutorials, and additional resources.
 
-## Project Proposal
-<https://drive.google.com/file/d/1ZbBGjVluDXpoL1RCdHnk7FJqvz5pHdtu/view?usp=drive_link>
+## Project Poster
+[<https://drive.google.com/file/d/1ZbBGjVluDXpoL1RCdHnk7FJqvz5pHdtu/view?usp=drive_link>](https://drive.google.com/file/d/16X5Xw-yC25NDlBHGlQiNzXGygjl5bGMY/view)
 
 ## Group Members
-- Member 1: Brief description or role within the group.
-- Member 2: Brief description or role within the group.
-- ...
-- [Link to more detailed bios or profiles if available.]
-
+- Member 1: Youmi Oh, University of Colorado Boulder and NOAA Global Monitoring Laboratory, co-PI
+- Member 2: Licheng Liu, University of Minnesota, co-PI
+- Member 3: Sparkle Malone, Yale University, co-PI
+- Member 4: Gavin McNicol, University of Illinois Chicago, co-PI
+- All our members can be found in the Poster (https://drive.google.com/file/d/16X5Xw-yC25NDlBHGlQiNzXGygjl5bGMY/view).
+  
 ## Repository Structure
 - **Analysis Code**: Scripts for data analysis, statistical modeling, etc.
 - **Data Processing**: Scripts for cleaning, merging, and managing datasets.
