@@ -31,6 +31,15 @@ Welcome to the AI for Natural Methane Working Group (AI4NM) repository, an integ
 ## Meeting Notes and Agendas
 - Regular updates to keep all group members informed and engaged with the project's progress and direction.
 
+## Sub-Working Groups (Leads)
+1. Perspectives on KGML4CH4 (Kevin Rozmiarek, Shuo Chen)
+2. Global budget and trends, regional patterns (Qing Zhu)
+3. Disturbance ecology- ex. Fire, Disease, Salinity (Sparkle Malone)
+4. Sources and sinks - ex. Microbial processes (Jianqiu Zheng)
+
+### Global budget and trends, regional patterns
+This sub-working group will focus on producing new global scale estimates of natural methane sources and sinks. Products will be analyzed *i)* temporally to identify trends over time during reconstructions (~2000-2024) and forecasts (to 2100) as well as *ii)* spatially to detect regional hotspots and create methane constituency classes based upon flux seasonality, climate, phenology, and surface inundation metrics.
+
 ## Contributing to This Repository
 - Contributions from all group members are welcome.
 - Please adhere to these guidelines:
