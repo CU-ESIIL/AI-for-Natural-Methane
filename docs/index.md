@@ -7,30 +7,24 @@
 Welcome to the "AI for Natural Methane" repository, part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository serves as the central hub for our working group, hosting our project description, proposals, member bios, codebase, and more.<br>
 
 
-## Current Working Group Members
+## Working Group Members
 Youmi Oh, Licheng Liu, Sparkle Malone, Gavin McNicol, Kyle Arndt, Lori Bruhwiler, Shuo Chen, Zichong Chen, Bradley Gay, Alison Hoyt, Sara Knox, Fa Li, Avni Malhotra, Stefan Metzger, Kendalynn Morris, Colin Quinn, Kevin Rozmiarek, Chris Smith, Eric Ward, Jennifer Watts, Yi Yang, Qing Ying, Michael Yonker, Fenghui Yuan, Kunxiaojia Yuan, Jianqiu Zheng, Qing Zhu, and Qianlai Zhuang<br>
-- Our affiliation can be found: <https://docs.google.com/spreadsheets/d/1HALS0Iwz_ofEZ-cD7weIxUQ2Cgdbg2ufR8O3ADrjv5U/edit?gid=0#gid=0>
+- Our affiliation can be found: <https://docs.google.com/spreadsheets/d/1HALS0Iwz_ofEZ-cD7weIxUQ2Cgdbg2ufR8O3ADrjv5U/edit?gid=0#gid=0><br><br>
+<img src="homepage_materials/WG_photo1.png" width="300">   <img src="homepage_materials/WG_photo2.png" width="325">
+Photos from our Workshop in Oct 2024
+<br><br>
+## Motivation of Our Project
+<img align=right src="homepage_materials/KGML_concept.png" width="300"><img align=right src="homepage_materials/Methane_Budget.png" width="300">
+- Atmospheric methane (CH4) grew at the fastest rate ever recorded in 2020-2022. Slowing or reversing the accelerating growth in atmospheric CH4 will require an improved understanding of the global CH4 budget. Natural CH4 emissions are responsible for ~40% of the total global CH4 budget but remain the most uncertain factor. 
+- **Our working group aims to build a novel Knowledge-Guided Machine Learning (KGML) framework that integrates scientific knowledge from process-based models and machine learning to harmonize simulated and observed datasets from global wetlands and soil sinks.**
+<br><br>
 
-
-
-## Our Project
-
-Harmonizing Natural Methane Datasets using Knowledge-Guided Machine Learning
-
-Atmospheric methane (CH4) is the second most powerful greenhouse gas after carbon dioxide and grew at the fastest rate ever recorded in 2020-2022. Slowing or reversing the accelerating growth in atmospheric CH4 will require an improved understanding of the global CH4 budget, which is currently underconstrained. Natural CH4 budgets are responsible for ~40% of the total global CH4 budgets but remain the most uncertain factor. This AI for natural CH4 working group aims to build a novel framework that integrates scientific knowledge and machine learning to harmonize simulated and observed datasets from global wetlands and soil sinks to quantify the spatial and temporal changes of global natural CH4 fluxes. Specifically, we will harmonize every possible form of the global natural CH4 datasets, including field-based CH4 fluxes from chamber and eddy-covariance measurements and simulated CH4 fluxes from bottom-up process-based models and top-down atmospheric assimilation models. As an output of this working group, we will generate and publicly share harmonized measurement datasets and global natural CH4 flux products from 1980 to present.
-
-
-## Project Poster:[https://drive.google.com/file/d/16X5Xw-yC25NDlBHGlQiNzXGygjl5bGMY/view]
-
-## Principal Investigators
-
-- **Member 1**: Youmi Oh, University of Colorado Boulder, PI
-- **Member 2**: Sparkle Malone, Yale University, Co-PI
-- **Member 3**: Gavin McNicol, University of Illinois Chicago, Co-PI
-- **Member 4**: Licheng Liu, University of Minnesota, Co-PI, tech lead
-  
-- **Working Group Members: <https://docs.google.com/spreadsheets/d/1HALS0Iwz_ofEZ-cD7weIxUQ2Cgdbg2ufR8O3ADrjv5U/edit?gid=0#gid=0>
-
+## Goal of our Working Group
+<img align=left src="homepage_materials/WG_goal.png" width="500"><br>
+- The objective of this working group is to synthesize multiple measured and simulated datasets using a KGML framework to better constrain natural CH4 fluxes from wetlands and soil sinks.
+- This KGML framework will be designed to integrate scientific knowledge from bottom-up and top-down models, machine learning models and multi-source data through knowledge-guided architecture pretraining and training.
+- Specifically, we will harmonize the following four types of natural CH4 datasets within the KGML framework; We will use the bottom-up and top-down estimates of natural CH4 sources and sinks to pretrain the model. We then use observation data from chamber and FLUXNET-CH4 measurements to fine-tune the model.
+<br><br>
 ## Code Repository: <https://github.com/CU-ESIIL/AI-for-Natural-Methane>
 
 ## Meeting Notes and Agendas
