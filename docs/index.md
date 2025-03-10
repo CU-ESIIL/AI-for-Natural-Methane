@@ -36,7 +36,7 @@ Our first in-person workshop was held from October 2 to 4, 2024 at ESIIL in Boul
 <br><br>
 
 **[Outcome of the workshop]**<br>
-- We are working on 2 perspective papers (led by Shuo Chen and Kevin Rozmiarek) on (1) Pushing the Frontiers in Natural Biogenic Methane Modeling and Monitoring with Machine Learning and (2) Ethics in AI/ML for the carbon cycle.
+- We are working on 2 perspective papers (led by Shuo Chen and Kevin Rozmiarek) on (1) Pushing the Frontiers in Natural Biogenic Methane Modeling and Monitoring with Machine Learning (*Chen et al., in prep*) and (2) Ethics in AI/ML for the carbon cycle (*Rozmiarek et al., in prep*).
 
 <img src="homepage_materials/groan_zone.png" width="600"> <br><br>
 We navigated several challenges to progress through the groan zone and anticipate more ahead!
@@ -64,7 +64,7 @@ Sources and sinks - ex. Microbial processes
 <br><br>
 
 ## Code Repository: <https://github.com/CU-ESIIL/AI-for-Natural-Methane>
-
+<br><br>
 ## Contributing to This Repository
 
 We welcome contributions from all group members. To maintain the quality and integrity of the repository, please adhere to the following guidelines:
