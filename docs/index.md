@@ -1,9 +1,17 @@
-![header] (docs/homepage_materials/Logo & website figures.png) 
+<img src="homepage_materials/header.png" alt="alt text" style="max-width: 100%;"><br>
 
 
-# AI for Natural Methane
 
-Welcome to the "AI for Natural Methane" repository, part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository serves as the central hub for our working group, hosting our project description, proposals, member bios, codebase, and more.
+# AI for Natural Methane: Community Effort to Harmonize Natural Methane Datasets using Knowledge Guided Machine Learning
+
+Welcome to the "AI for Natural Methane" repository, part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository serves as the central hub for our working group, hosting our project description, proposals, member bios, codebase, and more.<br>
+
+
+## Current Working Group Members
+Youmi Oh, Licheng Liu, Sparkle Malone, Gavin McNicol, Kyle Arndt, Lori Bruhwiler, Shuo Chen, Zichong Chen, Bradley Gay, Alison Hoyt, Sara Knox, Fa Li, Avni Malhotra, Stefan Metzger, Kendalynn Morris, Colin Quinn, Kevin Rozmiarek, Chris Smith, Eric Ward, Jennifer Watts, Yi Yang, Qing Ying, Michael Yonker, Fenghui Yuan, Kunxiaojia Yuan, Jianqiu Zheng, Qing Zhu, and Qianlai Zhuang<br>
+- Our affiliation can be found: <https://docs.google.com/spreadsheets/d/1HALS0Iwz_ofEZ-cD7weIxUQ2Cgdbg2ufR8O3ADrjv5U/edit?gid=0#gid=0>
+
+
 
 ## Our Project
 
