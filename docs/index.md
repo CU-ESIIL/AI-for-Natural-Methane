@@ -13,21 +13,21 @@ Photos from our Workshop in Oct 2024
 <br><br>
 ## Motivation of Our Project
 <img align=right src="homepage_materials/KGML_concept.png" width="300"><img align=right src="homepage_materials/Methane_Budget.png" width="300">
-- Atmospheric methane (CH4) grew at the fastest rate ever recorded in 2020-2022. Slowing or reversing the accelerating growth in atmospheric CH4 will require an improved understanding of the global CH4 budget. Natural CH4 emissions are responsible for ~40% of the total global CH4 budget but remain the most uncertain factor. 
+- Atmospheric methane (CH4) grew at the fastest rate ever recorded in 2020-2022. Slowing or reversing the accelerating growth in atmospheric CH4 will require an improved understanding of the global CH4 budget. Natural CH4 emissions are responsible for ~40% of the total global CH4 budget but remain the most uncertain factor. <br>
 - **Our working group aims to build a novel Knowledge-Guided Machine Learning (KGML) framework that integrates scientific knowledge from process-based models and machine learning to harmonize simulated and observed datasets from global wetlands and soil sinks.**
 <br><br>
 
 ## Goal of our Working Group
 <img align=left src="homepage_materials/WG_goal.png" width="500"><br>
-- The objective of this working group is to synthesize multiple measured and simulated datasets using a KGML framework to better constrain natural CH4 fluxes from wetlands and soil sinks.
-- This KGML framework will be designed to integrate scientific knowledge from bottom-up and top-down models, machine learning models and multi-source data through knowledge-guided architecture pretraining and training.
+- The objective of this working group is to synthesize multiple measured and simulated datasets using a KGML framework to better constrain natural CH4 fluxes from wetlands and soil sinks.<br>
+- This KGML framework will be designed to integrate scientific knowledge from bottom-up and top-down models, machine learning models and multi-source data through knowledge-guided architecture pretraining and training.<br>
 - Specifically, we will harmonize the following four types of natural CH4 datasets within the KGML framework; We will use the bottom-up and top-down estimates of natural CH4 sources and sinks to pretrain the model. We then use observation data from chamber and FLUXNET-CH4 measurements to fine-tune the model.
 <br><br>
 
 ## Progress on our first in-person workshop in October, 2024
 Our first in-person workshop was held from October 2 to 4, 2024 at ESIIL in Boulder, CO. We had an enthusiastic group of 23 in-person team members and 7 virtual members join the workshop.
 <br><br>
-**[Overarching goals]**
+**[Overarching goals]**<br>
 - **1. Harmonize Natural Methane Dataset**: We worked on harmonizing field-based methane fluxes from chamber and eddy-covariance measurements, natural methane fluxes simulated from top-down atmospheric inversions constrained by atmospheric observations, and simulated methane fluxes from bottom-up process-based models. We collected our first set of natural methane datasets during this workshop.
 <br><br>
 - **2. Identify Knowledge and Gaps**: We aim to identify the current state of knowledge regarding the community’s understanding of natural methane sources and sinks, uncertainties in natural methane data and models, and how to harmonize different forms of data and models for knowledge-guided machine learning (KGML).
@@ -35,7 +35,7 @@ Our first in-person workshop was held from October 2 to 4, 2024 at ESIIL in Boul
 - **3. KGML Tutorial**: Dr. Licheng Liu led the great tutorial on how to run KGML for carbon quantification based on Liu et al. (2024).
 <br><br>
 
-**[Outcome of the workshop]**
+**[Outcome of the workshop]**<br>
 - We are working on 2 perspective papers (led by Shuo Chen and Kevin Rozmiarek) on (1) Pushing the Frontiers in Natural Biogenic Methane Modeling and Monitoring with Machine Learning and (2) Ethics in AI/ML for the carbon cycle.
 
 <img src="homepage_materials/groan_zone.png" width="600"> <br><br>
