@@ -1,4 +1,4 @@
-![header](assets/homepage_materials/DOE_logo.png)
+![header] (docs/homepage_materials/Logo & website figures.png) 
 
 
 # AI for Natural Methane
