@@ -13,6 +13,8 @@ Our first in-person workshop was held from October 2 to 4, 2024 at ESIIL in Boul
 **[Outcome of the workshop]**<br>
 - We are working on 2 perspective papers (led by Shuo Chen and Kevin Rozmiarek) on (1) Pushing the Frontiers in Natural Biogenic Methane Modeling and Monitoring with Machine Learning (*Chen et al., in prep*) and (2) Ethics in AI/ML for the carbon cycle (*Rozmiarek et al., in prep*).
 
+![data_harmonization](../homepage_materials/groan_zone.png) 
+
 <img src="../homepage_materials/groan_zone.png" width="600"> <br><br>
 
 We navigated several challenges to progress through the groan zone and anticipate more ahead!
