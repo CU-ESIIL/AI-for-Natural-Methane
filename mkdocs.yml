@@ -15,14 +15,13 @@ nav:
   - Home: index.md
   - Workshop in 2024: resources/workshop_2024.md
   - Sub-Working Group:
-       - Overview: resources/pre_meeting_notes.md
-       - Perspectives on KGML-CH4: resources/first_meeting_notes.md
-       - Global Budget and Trends: resources/second_meeting_notes.md
-       - Disturbance Ecology: resources/third_meeting_notes.md
-       - Microbial Processes: resources/post_meeting_notes.md
+       - Overview: resources/subWG_overview.md
+       - Perspectives on KGML-CH4: resources/subWG_1.md
+       - Global Budget and Trends: resources/subWG_2.md
+       - Disturbance Ecology: resources/subWG_3.md
+       - Microbial Processes: resources/subWG_4.md
  - Manuscript Progress:
-       - Manuscript1: resources/manuscript1.md
-       - Manuscript2: resources/manuscript2.md
+       - Manuscript: resources/manuscript.md
   - Resources:
        - Code of Conduct: resources/code-of-conduct.md
        - Participant agreement: resources/participant_agreement.md
