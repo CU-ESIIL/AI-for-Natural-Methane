@@ -11,18 +11,14 @@ Welcome to the AI for Natural Methane Working Group (AI4NM) repository, an integ
 - Access detailed documentation on our [GitHub Pages site](https://cu-esiil.github.io/AI-for-Natural-Methane/).
 - Find comprehensive guides, tutorials, and additional resources.
 
-## Project Proposal
-[<https://drive.google.com/file/d/1ZbBGjVluDXpoL1RCdHnk7FJqvz5pHdtu/view?usp=drive_link>]
-
 ## Project Poster
 [<https://drive.google.com/file/d/16X5Xw-yC25NDlBHGlQiNzXGygjl5bGMY/view>]
 
 ## Group Members
-- Member 1: Youmi Oh, University of Colorado Boulder and NOAA Global Monitoring Laboratory, co-PI
-- Member 2: Licheng Liu, University of Minnesota, co-PI
-- Member 3: Sparkle Malone, Yale University, co-PI
-- Member 4: Gavin McNicol, University of Illinois Chicago, co-PI
-- All our members can be found in the Poster (https://drive.google.com/file/d/16X5Xw-yC25NDlBHGlQiNzXGygjl5bGMY/view).
+Youmi Oh, Licheng Liu, Sparkle Malone, Gavin McNicol, Kyle Arndt, Lori Bruhwiler, Shuo Chen, Zichong Chen, Bradley Gay, Alison Hoyt, Sara Knox, Fa Li, Avni Malhotra, Stefan Metzger, Kendalynn Morris, Colin Quinn, Kevin Rozmiarek, Chris Smith, Eric Ward, Jennifer Watts, Yi Yang, Qing Ying, Michael Yonker, Fenghui Yuan, Kunxiaojia Yuan, Jianqiu Zheng, Qing Zhu, and Qianlai Zhuang<br>
+- Our affiliation can be found: <https://docs.google.com/spreadsheets/d/1xVoMTReT30rbvdaD4w0QPra3FjtPc4I5zj12ZM48NB0/edit?usp=sharing><br><br>
+<img src="docs/homepage_materials/WG_photo1.png" width="300">   <img src="docs/homepage_materials/WG_photo2.png" width="325">
+Photos from our Workshop in Oct 2024
   
 ## Repository Structure
 - **Analysis Code**: Scripts for data analysis, statistical modeling, etc.
