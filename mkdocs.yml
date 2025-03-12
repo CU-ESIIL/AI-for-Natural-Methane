@@ -13,7 +13,7 @@ copyright: 'Copyright &copy; 2023 University of Colorado Boulder'
 # Page tree
 nav:
   - Home: index.md
-  - Workshop in 2024: 
+  - Workshop in 2024: resources/workshop_2024.md
   - Sub-Working Group:
        - Overview: resources/pre_meeting_notes.md
        - Perspectives on KGML-CH4: resources/first_meeting_notes.md
