@@ -1,5 +1,5 @@
 
-## Progress on our first in-person workshop in October, 2024
+# Progress on our first in-person workshop in October, 2024
 Our first in-person workshop was held from October 2 to 4, 2024 at ESIIL in Boulder, CO. We had an enthusiastic group of 23 in-person team members and 7 virtual members join the workshop.
 <br><br>
 **[Overarching goals]**<br>
