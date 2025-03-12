@@ -24,7 +24,8 @@ Photos from our Workshop in Oct 2024
 - Specifically, we will harmonize the following four types of natural CH4 datasets within the KGML framework; We will use the bottom-up and top-down estimates of natural CH4 sources and sinks to pretrain the model. We then use observation data from chamber and FLUXNET-CH4 measurements to fine-tune the model.
 <br><be>
 
-## Code Repository: <https://github.com/CU-ESIIL/AI-for-Natural-Methane>
+## Code Repository
+<https://github.com/CU-ESIIL/AI-for-Natural-Methane>
 <br><br>
 ## Contributing to This Repository
 
