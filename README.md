@@ -1,3 +1,4 @@
+<img src="docs/homepage_materials/header.png" alt="alt text" style="max-width: 100%;"><br>
 # [ESIIL AI for Natural Methane Working Group (AI4NM)]
 
 Welcome to the AI for Natural Methane Working Group (AI4NM) repository, an integral part of the Environmental Data Science Innovation and Inclusion Lab (ESIIL). This repository is the central hub for our working group, encompassing our project overview, proposals, team member information, codebase, and more.
