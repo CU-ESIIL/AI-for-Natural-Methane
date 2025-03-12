@@ -20,7 +20,8 @@ nav:
        - Global Budget and Trends: resources/subWG_2.md
        - Disturbance Ecology: resources/subWG_3.md
        - Microbial Processes: resources/subWG_4.md
- - Manuscript Progress:
+  - Manuscript/Data Harmonization:
+       - Data Harmonization: resources/data_harmonization.md
        - Manuscript: resources/manuscript.md
   - Resources:
        - Code of Conduct: resources/code-of-conduct.md
