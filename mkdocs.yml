@@ -13,6 +13,16 @@ copyright: 'Copyright &copy; 2023 University of Colorado Boulder'
 # Page tree
 nav:
   - Home: index.md
+  - Workshop in 2024: 
+  - Sub-Working Group:
+       - Overview: resources/pre_meeting_notes.md
+       - Perspectives on KGML-CH4: resources/first_meeting_notes.md
+       - Global Budget and Trends: resources/second_meeting_notes.md
+       - Disturbance Ecology: resources/third_meeting_notes.md
+       - Microbial Processes: resources/post_meeting_notes.md
+ - Manuscript Progress:
+       - Manuscript1: resources/manuscript1.md
+       - Manuscript2: resources/manuscript2.md
   - Resources:
        - Code of Conduct: resources/code-of-conduct.md
        - Participant agreement: resources/participant_agreement.md
@@ -20,18 +30,10 @@ nav:
        - Markdown: resources/markdown_basics.md
        - Cyverse: resources/cyverse_basics.md
        - Docker: resources/docker_basics.md
-  - Meeting Notes:
-       - Pre-meetings: resources/pre_meeting_notes.md
-       - First meeting: resources/first_meeting_notes.md
-       - Second meeting: resources/second_meeting_notes.md
-       - Third meeting: resources/third_meeting_notes.md
-       - Post-meetings: resources/post_meeting_notes.md
   - Code documentation:
        - Data processing: resources/data_processing.md
        - Data analysis: resources/data_analysis.md
        - Visualizations: resources/visualizations.md 
-  - Manuscript drafts:
-       - Manuscript: resources/manuscript.md
   - References:
        - Notes from readings: resources/notes_from_readings.md
        - Citations: resources/citations.md
