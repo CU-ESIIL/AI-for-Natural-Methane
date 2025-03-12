@@ -1,0 +1,20 @@
+
+## Our Ongoing projects, papers, and sub-Working Groups
+- **Harmonized Data Product**: 
+We are working to generate and publicly share harmonized measured/simulated datasets and monthly global natural methane flux products from KGML at 0.5-degree resolution from 1980 to present. *The first version of data is submitted to KDD 2025 Benchmarks Track in February, 2025.*<br><br>
+<img src="homepage_materials/Data_Harmonization.png" width="600"> <br><br>
+
+
+- **Data & code archive and visualization**
+We collected the multi-source datasets and products on CyVerse and will archive the final product on the ESS-DIVE.
+We will use our WG github to share all relevant codes and documentation, together with a Docker container (packaged codes and environment) for KGML.
+The gridded final product from KGML will be visualized and/or accessible in public platform such as Mapbox (Example) or Google Earth Engine.
+
+- **Ongoing sub-working groups**
+Perspectives on KGML4CH4 
+Global budget and trends, regional patterns 
+Disturbance ecology- ex. Fire, Disease, Salinity
+Sources and sinks - ex. Microbial processes
+<br><br>
+… and more to come!
+<br><br>
