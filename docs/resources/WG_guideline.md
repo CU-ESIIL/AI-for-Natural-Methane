@@ -16,14 +16,14 @@ We aim to maintain an ongoing open dialogue regarding authorship to ensure that 
 
 Below are the current guidelines based on our discussion during the workshop:
 ## Co-authorship Responsibilities
-- Co-authorship Requirements: All co-authors must contribute meaningfully to at least two CRediT categories based on the project/paper-specific table (here is a template). Contributors to only one CRediT category will be acknowledged in the Acknowledgements section.
+- Co-authorship Requirements: All co-authors must contribute meaningfully to at least two CRediT categories based on the project/paper-specific table (here is a template). Contributors to only one CRediT category will be acknowledged in the Acknowledgements section. 
 - Author Order: Author order will be determined based on numeric scores derived from contributions to the CRediT categories, and the order can change throughout the review process if contributions change. Those with the same scores will be listed alphabetically.
 - Corresponding Author: The person who will lead the project/paper will be listed as a corresponding author unless a significant change in leadership occurs and is agreed upon by the all authors.
 
 Co-authorship Table
-To help organize co-authors and track contributions, we will provide the following co-authorship table. The table will be project/paper-specific and organized by the corresponding author based on the tasks required for the project/paper. This will ensure transparency in the authorship order and explicitly acknowledge contributions across the different tasks.
-- Ethics paper: 
-https://docs.google.com/spreadsheets/d/1-KD0qOo19hTA0tkEBzOjEo5taGt2JQzp/edit?usp=sharing&ouid=110329268661197943635&rtpof=true&sd=true
-- Perspective paper: 
-https://docs.google.com/spreadsheets/d/1uFtH9OmwHcth0_ekgmEpJioxmoQAhxxz/edit?usp=drive_link&ouid=101465631608480789363&rtpof=true&sd=true
+To help organize co-authors and track contributions, we will provide the following co-authorship table. The table will be project/paper-specific and organized by the corresponding author based on the tasks required for the project/paper. This will ensure transparency in the authorship order and explicitly acknowledge contributions across the different tasks.<be>
+- Ethics paper: <be>
+https://docs.google.com/spreadsheets/d/1-KD0qOo19hTA0tkEBzOjEo5taGt2JQzp/edit?usp=sharing&ouid=110329268661197943635&rtpof=true&sd=true<be>
+- Perspective paper: <be>
+https://docs.google.com/spreadsheets/d/1uFtH9OmwHcth0_ekgmEpJioxmoQAhxxz/edit?usp=drive_link&ouid=101465631608480789363&rtpof=true&sd=true<be>
 
