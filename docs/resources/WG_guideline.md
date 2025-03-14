@@ -21,9 +21,9 @@ Below are the current guidelines based on our discussion during the workshop:
 - Corresponding Author: The person who will lead the project/paper will be listed as a corresponding author unless a significant change in leadership occurs and is agreed upon by the all authors.
 
 Co-authorship Table
-To help organize co-authors and track contributions, we will provide the following co-authorship table. The table will be project/paper-specific and organized by the corresponding author based on the tasks required for the project/paper. This will ensure transparency in the authorship order and explicitly acknowledge contributions across the different tasks.<be>
-- Ethics paper: <be>
-https://docs.google.com/spreadsheets/d/1-KD0qOo19hTA0tkEBzOjEo5taGt2JQzp/edit?usp=sharing&ouid=110329268661197943635&rtpof=true&sd=true<be>
-- Perspective paper: <be>
-https://docs.google.com/spreadsheets/d/1uFtH9OmwHcth0_ekgmEpJioxmoQAhxxz/edit?usp=drive_link&ouid=101465631608480789363&rtpof=true&sd=true<be>
+To help organize co-authors and track contributions, we will provide the following co-authorship table. The table will be project/paper-specific and organized by the corresponding author based on the tasks required for the project/paper. This will ensure transparency in the authorship order and explicitly acknowledge contributions across the different tasks.<br>
+- Ethics paper: <br>
+https://docs.google.com/spreadsheets/d/1-KD0qOo19hTA0tkEBzOjEo5taGt2JQzp/edit?usp=sharing&ouid=110329268661197943635&rtpof=true&sd=true <br>
+- Perspective paper: <br>
+https://docs.google.com/spreadsheets/d/1uFtH9OmwHcth0_ekgmEpJioxmoQAhxxz/edit?usp=drive_link&ouid=101465631608480789363&rtpof=true&sd=true <br>
 
