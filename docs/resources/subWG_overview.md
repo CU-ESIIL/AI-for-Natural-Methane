@@ -4,8 +4,8 @@
 - Disturbance ecology- ex. Fire, Disease, Salinity
 - Sources and sinks - ex. Microbial processes
 
-## Goal: first sub-WG product by our Workshop 2025
+**Goal: first sub-WG product by our Workshop 2025**
 --> Build dataset --> Run a first analysis by Mid-October 2025
-<br>
+<br><br>
 … and more to come!
 <br>
