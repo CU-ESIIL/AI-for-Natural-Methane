@@ -5,7 +5,7 @@
 - Sources and sinks - ex. Microbial processes
 
 ## Goal: first sub-WG product by our Workshop 2025
---> Build dataset --> Run a first analysis by October 2025 (6 months left)
+--> Build dataset --> Run a first analysis by Mid-October 2025
 <br>
 … and more to come!
-<br><br>
+<br>
