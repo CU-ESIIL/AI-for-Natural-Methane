@@ -3,4 +3,3 @@
 - Members of our sub-WG:
   - Qing Zhu (Lawrence Berkeley National Laboratory)
   - Gavin McNicol (University of Illinois Chicago)
-  - 
