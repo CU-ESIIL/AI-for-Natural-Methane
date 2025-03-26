@@ -9,9 +9,9 @@ Data that the AI4NM working group collected span various data license agreements
 “Intellectual Property”  (IP includes all copyright, patent, trademark, trade secret and other intellectual property rights. Usually of commercial interest. <br>
 Where the intellectual property of individuals or organizations needs to be explicitly defined and agreed upon, teams should also reach out to Jennifer Balch for consultation and ask their tech lead to consult with the ESIIL CI team. <br>
 *Participants warrant they have the authority to share or work with data or other IP within the ESIIL Working Group environment.*
-Otherwise:
-- IP that is developed may be the property of the US Government.
-- And/or IP that is developed may be licensed free-of-charge by the US Government.
+Otherwise:<br>
+- IP that is developed may be the property of the US Government.<br>
+- And/or IP that is developed may be licensed free-of-charge by the US Government.<br>
 
 ## Invitation of WG members
 Due to the large size of our WG and limited funding, we invite new WG members if (1) they can provide data/resources directly for our research, (2) develop and contribute to publications, or (3) they can conduct AI modeling for our WG. 
