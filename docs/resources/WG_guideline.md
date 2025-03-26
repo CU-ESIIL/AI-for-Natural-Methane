@@ -1,9 +1,17 @@
 # Guidelines for Intellectual Contributions and Credit (Version March 2025)
 In alignment with the general guidelines for intellectual contributions and credit outlined by ESIIL (here) and the agreement of our working group, we outline the following rules and processes for authorship and intellectual contributions:
 
-## Intellectual Property
+## Intellectual Property (IP)
 Materials, including specific project ideas/conceptualization, discussion/breakout/summary notes, video recordings, and sub-working group activities generated during the ESIIL AI4NM workshop and monthly meetings are considered intellectual property. Before formal publication, AI4NM leadership team (Licheng Liu, Sparkle Malone, Gavin McNicol, Youmi Oh) must be granted sufficient time to review the manuscripts and/or products to ensure proper citation and credit for AI4NM working group contributions.
-Data that the AI4NM working group collected span various data license agreements. Please do not distribute AI4NM data beyond the working group participants without permission from the leadership team.
+Data that the AI4NM working group collected span various data license agreements. **Please do not distribute AI4NM data beyond the working group participants without permission from the leadership team.**
+
+## IP guidelines from ESIIL: 
+“Intellectual Property”  (IP includes all copyright, patent, trademark, trade secret and other intellectual property rights. Usually of commercial interest. <br>
+Where the intellectual property of individuals or organizations needs to be explicitly defined and agreed upon, teams should also reach out to Jennifer Balch for consultation and ask their tech lead to consult with the ESIIL CI team. <br>
+*Participants warrant they have the authority to share or work with data or other IP within the ESIIL Working Group environment.*
+Otherwise:
+- IP that is developed may be the property of the US Government.
+- And/or IP that is developed may be licensed free-of-charge by the US Government.
 
 ## Invitation of WG members
 Due to the large size of our WG and limited funding, we invite new WG members if (1) they can provide data/resources directly for our paper or data publication or (2) they can conduct an AI modeling for our WG.
