@@ -14,7 +14,7 @@ Otherwise:
 - And/or IP that is developed may be licensed free-of-charge by the US Government.
 
 ## Invitation of WG members
-Due to the large size of our WG and limited funding, we invite new WG members if (1) they can provide data/resources directly for our paper or data publication or (2) they can conduct an AI modeling for our WG.
+Due to the large size of our WG and limited funding, we invite new WG members if (1) they can provide data/resources directly for our paper or data publication or (2) they can conduct AI modeling for our WG.
 
 ## Communication Protocol
 The AI4NM leadership team takes responsibility for organizing working group communications, such as group emails and full group meetings. If you have a message you want to share or an agenda item to add for an upcoming meeting, please share it first with the leadership team. Having communications coordinated by the leadership team will help prevent duplicate notifications or requests. However, you are encouraged to reach out directly to individual members of the group regarding personal interests or collaborations.
