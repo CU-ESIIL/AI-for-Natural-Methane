@@ -1,3 +1,5 @@
-Sub-Working Group 4: Sources and sinks - ex. Microbial processes (Jianqiu Zheng)
+Sub-Working Group 4: Sources and sinks - ex. Microbial processes (Lead: Jianqiu Zheng)
 
-Members: Kendal Morris, Jianqiu Zheng, Fenghui Yuan, Youmi Oh, 
+Members: Kendal Morris, Jianqiu Zheng, Fenghui Yuan, Youmi Oh, (everyone is welcome!)
+
+This folder will be used to collect data and save analysis for sub-WG 4.
