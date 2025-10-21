@@ -28,10 +28,10 @@ Photos from our Workshop in Oct 2024
 - Regular updates to keep all group members informed and engaged with the project's progress and direction.
 
 ## Sub-Working Groups (Leads)
-1. Perspectives on KGML4CH4 (Kevin Rozmiarek, Shuo Chen)
-2. Global budget and trends, regional patterns (Qing Zhu)
-3. Disturbance ecology- ex. Fire, Disease, Salinity (Sparkle Malone)
-4. Sources and sinks - ex. Microbial processes (Jianqiu Zheng)
+1. Perspectives on KGML4CH4 (Lead: Kevin Rozmiarek, Lead: Shuo Chen)
+2. Global budget and trends, regional patterns (Lead: Qing Zhu)
+3. Extreme Events- ex. Drought effects of CH4 emissions (Lead: Sparkle Malone)
+4. Sources and sinks - ex. Microbial processes (Lead: Jianqiu Zheng)
 
 ### Global budget and trends, regional patterns
 This sub-working group will focus on producing new global scale estimates of natural methane sources and sinks. Products will be analyzed *i)* temporally to identify trends over time during reconstructions (~2000-2024) and forecasts (to 2100) as well as *ii)* spatially to detect regional hotspots and create methane constituency classes based upon flux seasonality, climate, phenology, and surface inundation metrics.
