@@ -1,83 +1,127 @@
-# 4_Analysis
+library(tidyverse)
+library(randomForest)
+library(GGally)
+
+rm(list=ls())
 
 load( file='/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/FinalDrought_Data.RDATA')
 
-fluxes.drought <-Drought.DF # the dataframe to use:
+fluxes.drought_normalized %>% names
+ 
+# Random Forest Model Development:  ####
 
-drought.test.kruskal <- data.frame()
+Normalizex.spei48.model.rf <- randomForest::randomForest(normalized_Fch4 ~ 
+                                         SPEI48 + ELEV + DI.SPI48.MeanDuration
+                                         + month + VPD_F+TA_F ,
+                                         data= fluxes.drought_normalized,
+                                         importance=TRUE )
 
-for( i in fluxes.drought$SITE_ID %>% unique){
-  print(i)
-  subset <- fluxes.drought %>% filter( SITE_ID == i)
-  test <- data.frame(SITE_ID = i )
+Normalizex.spei48.model.rf$importance %>% as.data.frame() %>% mutate(vars = rownames(Normalizex.spei48.model.rf$importance)) %>% 
+  ggplot( aes( x=reorder(vars, IncNodePurity), y= IncNodePurity) )+ 
+            geom_point() + geom_segment( aes(x=reorder(vars, IncNodePurity), xend=reorder(vars, IncNodePurity), y=0, yend=IncNodePurity), color="grey") + coord_flip() + theme_bw() +xlab('Variable Names')
+
+
+save( Normalizex.spei48.model.rf, fluxes.drought_normalized,
+      file= '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/DroughtAnalysis.RDATA')
+
+# get the list of variables used in the model:
+
+model <-Normalizex.spei48.model.rf
+dataframe <- fluxes.drought_normalized
+y <- 'normalized_Fch4'
+factors <- 'month'
+
+sensitivity.df <- function( model, dataframe, y, factors){
   
-  if( length(subset$drought %>% unique) > 1){
-    try( kt <- kruskal.test(data = subset ,FCH4_F_ANNOPTLM ~ drought  ), silent =T)
-    try( pw <- pairwise.wilcox.test(subset$FCH4_F_ANNOPTLM, subset$drought), silent =T)
-    try(  test$Kpvalue <- kt$p.value, silent =T)
-    try(  means <- reframe( subset, .by=drought, mean=mean(FCH4_F_ANNOPTLM, na.rm=T), SE= sd(FCH4_F_ANNOPTLM, na.rm=T)/length(FCH4_F_ANNOPTLM)), silent =T)
-    try( test$drought.mean <- mean(subset$FCH4_F_ANNOPTLM[subset$drought == "Drought"], na.rm=T), silent =T)
-    try(  test$drought.sd <- sd(subset$FCH4_F_ANNOPTLM[subset$drought == "Drought"], na.rm=T), silent =T)
-    try( test$normal.mean <- mean(subset$FCH4_F_ANNOPTLM[subset$drought != "Drought"], na.rm=T), silent =T)
-    try( test$normal.sd <- sd(subset$FCH4_F_ANNOPTLM[subset$drought != "Drought"], na.rm=T), silent =T)
-    try( drought.test.kruskal <- rbind(drought.test.kruskal, test), silent =T)
-    try(rm( test, kt, pw), silent =T)
-  }
+  library(gtools)
+  # get the variables
+  vars <- model$importance %>%  as.data.frame() %>% row.names() 
+  vars.no.factors <-vars[vars != factors]
   
+  
+  sub.set.mean <- dataframe %>% select( vars.no.factors) %>% summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
+ 
+ sensitividy.df <- data.frame()
+ for( i in vars.no.factors){
+   print(i)
+   new.sub <-  dataframe %>% select( i) 
+   new.sub[i] %>% min
+   new.sub[i] %>% max %>% round(1)/10
+   seq(new.sub[i] %>% min, new.sub[i] %>% max , new.sub[i] %>% max %>% round(1)/10 )
+   
+   target <- data.frame(data = seq(new.sub[i] %>% min, new.sub[i] %>% max , new.sub[i] %>% max %>% round(1)/10 ) )
+   
+   names(target) <- i
+   
+   new.sub.set.mean <- sub.set.mean %>% select(- i) %>% cross_join(target ) %>% mutate(target = i)
+   
+   sensitividy.df <- smartbind( sensitividy.df, new.sub.set.mean )
+   
+ }
+ 
+ # Deal with factors:
+ sensitividy.df.final <- sensitividy.df
+ for( f in factors){
+   
+   factor.sub <- data.frame( data =dataframe[,f] %>% unique)
+   names(factor.sub) <- f
+   sensitividy.df.final <- sensitividy.df.final %>% cross_join(factor.sub)
+ }
+ 
+ sensitividy.df.final$predictions <- predict(model, newdata=sensitividy.df.final )
+ 
+ return( sensitividy.df.final )
 }
 
-drought.test.kruskal <- drought.test.kruskal %>% mutate( delta = ((drought.mean-normal.mean)/normal.mean)*100)
+Normalizex.spei48.model.rf.SA.DF <- sensitivity.df(
+  model =Normalizex.spei48.model.rf,
+  dataframe = fluxes.drought_normalized,
+  y ='normalized_Fch4',
+  factors = 'month')
 
-drought.test.kruskal$delta %>% hist()
-
-
-
-
-save( fluxes.drought, file= '~/YSE Dropbox/Sparkle Malone/Research/CH4_Drought/data/Drought_Analysis.RDATA' )
-save( drought.test.kruskal, file= '~/YSE Dropbox/Sparkle Malone/Research/CH4_Drought/data/Results_kruskal.RDATA' )
-
-
-fluxes.drought %>% ggplot(aes( SPEI1)) + geom_density() + theme_bw() + xlab('SPEI')
+save( Normalizex.spei48.model.rf, fluxes.drought_normalized,Normalizex.spei48.model.rf.SA.DF, 
+      file= '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/DroughtAnalysis.RDATA')
 
 
-drought.data <- fluxes.drought %>% filter (SPEI1 <= -1) %>% na.omit()
-drought.data$SITE_ID %>% unique() %>% length
+summary(Normalizex.spei48.model.rf.SA.DF)
 
-drought.test.kruskal2 <- drought.test.kruskal %>% left_join(fluxes.drought %>% filter( drought == "Drought") %>% reframe(.by=SITE_ID, SPEI1.Drought.mean = mean(SPEI1) %>% round(3), 
-                                                                                                                         SPEI1.Drought.max = min(SPEI1) %>% round(3),
-                                                                                                                         Month=month %>% as.numeric), by = 'SITE_ID') 
-fluxes.drought.SPEI <- fluxes.drought %>% mutate(SPEI.r = SPEI1 %>% round(1)) %>% reframe( .by=c(SITE_ID,SPEI.r),  FCH4_F_ANNOPTLM = mean(FCH4_F_ANNOPTLM, na.rm=T))
+Normalizex.spei48.model.rf.SA.DF %>% names()
+
+Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_boxplot(aes(x= SPEI48, y =predictions, col=month ))
 
 
-# Add the month of the drought.                         
-fluxes.drought.SPEI%>% ggplot(aes( y=FCH4_F_ANNOPTLM , x= SPEI.r)) + geom_point() + geom_smooth(method="lm") + ylim(-200, 200) 
+month.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_boxplot(aes(x= month, y =predictions)) + geom_hline( yintercept = 0, col="red")
 
-# Normalize the Sites by values near 0.
+SPEI.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_smooth(aes(x= SPEI48, y =predictions, col=month)) + geom_hline( yintercept = 0, col="red")
 
-fluxes.drought_normalized_data_zscore <- fluxes.drought %>%
-  group_by(SITE_ID) %>%
-  mutate(normalized_Fch4_zscore = scale(FCH4_F_ANNOPTLM)) %>%
-  ungroup()
+elevation.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'ELEV')%>% ggplot( ) + geom_smooth(aes(x= ELEV, y =predictions), col="black")
 
-drought.test.lm.SPEI <- data.frame()
+duration.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'DI.SPI48.MeanDuration') %>% ggplot( ) + geom_smooth(aes(x= DI.SPI48.MeanDuration, y =predictions), col="black")
 
-for( i in unique(fluxes.drought_normalized_data_zscore$SITE_ID )){
-  
-  print(i)
-  try(subset <- fluxes.drought_normalized_data_zscore %>% filter( SITE_ID == i), silent=T)
-  try(lm.model <- lm(subset$FCH4_F_ANNOPTLM ~ subset$SPEI1) %>% summary, silent=T)
-  try(results <- data.frame(SITE_ID = i ), silent=T)
-  try(results$slope <- lm.model$coefficients[2]  , silent=T) # Slope
-  try(results$r2 <-lm.model$r.squared %>% round(3) , silent=T)
-  try(results$pvalue <-lm.model$coefficients[2,4] %>% round(2) , silent=T)
-  
-  try(drought.test.lm.SPEI <- rbind(drought.test.lm.SPEI , results) , silent=T)
-  
-  rm( results, lm.model)
-  
-}
+TA.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'TA_F') %>% ggplot( ) + geom_smooth(aes(x= TA_F, y =predictions), col="black")
 
-drought.test.lm.SPEI %>%  ggplot(aes( slope)) + geom_density()
-save( drought.test.lm.SPEI, file= '~/YSE Dropbox/Sparkle Malone/Research/CH4_Drought/data/Results_LM_SPEI.RDATA' )
+VPD.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'VPD_F') %>% ggplot( ) + geom_smooth(aes(x= VPD_F, y =predictions), col="black")
 
-fluxes.drought %>% names()
+
+library(ggpubr)
+sensitivity.plots <- ggarrange(elevation.plot,
+          duration.plot,
+          month.plot,
+          SPEI.plot,
+          TA.plot,
+          VPD.plot, 
+          nrow=2, ncol=3)
+
+
+
+
+
+
+Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_line(aes(x= SPEI48, y =predictions, col=month ))
+
+Normalizex.spei48.model.rf.SA.DF  %>% ggplot( ) + geom_smooth(aes(x= TA_F, y =predictions) )
+
+Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48')  %>% ggplot( ) + geom_smooth(aes(x= SPEI48, y =predictions) )
+Normalizex.spei48.model.rf.SA.DF$NEE_F_ANNOPTLM
+
+Normalizex.spei48.model.rf.SA.DF %>% ggplot( ) + geom_point(aes(x= VPD_F, y =predictions, col=month) )

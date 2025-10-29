@@ -1,4 +1,16 @@
+library(tidyverse)
+library(sf)
+
+
 # Compile the data:
+project.dir <-"/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data"
+
+setwd( project.dir)
+load(file="Fluxnet_Data.RDATA")
+
+# Imports the site information
+fluxnet <- ch4.sites.shp %>% 
+  filter (FLUXNET.CH4 == "CC-BY-4.0" ) %>% st_transform(crs='+proj=longlat +datum=WGS84 +no_defs' )
 
 # Topography
 Topo.df <- read.csv( '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/Fluxnet_Topography.csv')
@@ -50,4 +62,17 @@ for ( site in full.df$SITE_ID %>% unique){
 
 names(Drought.DF)
 
-save( Drought.DF, file='/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/FinalDrought_Data.RDATA')
+load( '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/FinalDrought_Data.RDATA')
+
+Drought.DF.final <- fluxnet %>% as.data.frame() %>%  full_join (Drought.DF, by = 'SITE_ID')
+
+# Data Prep: #####
+fluxes.drought <- Drought.DF.final %>% filter( !is.na(FCH4_F_ANNOPTLM)) %>% mutate( month = as.factor(month)) 
+
+fluxes.drought.normal <- fluxes.drought %>%  select(SITE_ID, FCH4_F_ANNOPTLM, SPEI48 ) %>% mutate(normal = case_when( SPEI48 < 0.5 & SPEI48 > -0.5 ~ 1)) %>% filter ( normal == 1) %>% reframe( .by= SITE_ID, FCH4.normal = mean(FCH4_F_ANNOPTLM, na.rm=T))
+
+fluxes.drought_normalized <- fluxes.drought %>% left_join(fluxes.drought.normal, by = join_by(SITE_ID) ) %>% mutate(normalized_Fch4 = FCH4_F_ANNOPTLM -  FCH4.normal) %>% filter( IGBP != "CRO") %>% na.omit
+
+save( Drought.DF.final,fluxes.drought , fluxes.drought_normalized,  file='/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/FinalDrought_Data.RDATA')
+
+
