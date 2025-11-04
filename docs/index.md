@@ -1,18 +1,18 @@
 <img src="homepage_materials/header.png" alt="alt text" style="max-width: 100%;"><br>
 
 # AI for Natural Methane (AI4NM): A Community Effort to Harmonize Natural Methane Datasets Using Knowledge-Guided Machine Learning
-Welcome to the **AI for Natural Methane (AI4NM)** Working Group — a collaborative community sponsored by the **Environmental Data Science Innovation & Inclusion Lab (ESIIL)**. Our mission is to advance global understanding of natural methane sources and sinks by harmonizing diverse datasets and developing **knowledge-guided machine learning (KGML)** methods.<br><br>
+Welcome to the **AI for Natural Methane (AI4NM)** Working Group — a collaborative community sponsored by the **Environmental Data Science Innovation & Inclusion Lab (ESIIL)**. Our mission is to advance global understanding of natural methane sources and sinks by harmonizing model and observation datasets using **knowledge-guided machine learning (KGML)** methods.<br><br>
 ## Goals<br>
 1. **Harmonize** modeled and observed natural methane datasets into an AI-ready data pool.<br>
-2. **Do science** with KGML to improve constraints on methane sources, sinks, and drivers.  <br>
-3. **Grow AI literacy** via open packages, tutorials, and example workflows.<br>
+2. **Do science** with harmonized dataset and KGML to improve our understanding of natural methane sources and sinks.  <br>
+3. **Grow AI literacy** via open KGML packages and tutorials.<br>
 <br><br>
 
 ## Working Group Team (As of October 2025)
 Alison Hoyt, Ammara Talib, Avni Malhotra, Ben Gaubert, Ben Riddell-Young, Bradley A. Gay, Colin Quinn, Danielle Potocek, Eric Ward, Etienne Fluet-Chouinard, Fa Li, Fenghui Yuan, Gavin McNicol, Housen Chu, Jennifer Watts, Jianqiu Zheng, Kayla Borton, Kelly Wrighton, Kendalynn Morris, Kevin Rozmiarek, Kunxiaoji Yuan, Kyle Arndt, Licheng Liu, Lori Bruhwiler, Madeline Scyphers, Michael Yonker, Minkyu Moon, Nicole Cai, Qianlai Zhuang, Qing Ying, Qing Zhu, RongChao Dong, Sara Knox, Shuo Chen, Sparkle Malone, Stefan Metzger, Wang Shaoyu, Xiaowei Jia, Xueying Yu, Yi Yang, Yiming Sun, Youmi Oh, Yujie Liu, Zhen Zhang, Zichong Chen <br>
 - Our affiliation can be found: <https://docs.google.com/spreadsheets/d/1xVoMTReT30rbvdaD4w0QPra3FjtPc4I5zj12ZM48NB0/edit?usp=sharing><br><br>
-<img src="homepage_materials/WG_photo1.png" width="300">   <img src="homepage_materials/ai4nm_workshop_2025.png" width="325">
-Photos from our Workshops in Oct 2024 (left) and in Oct 2025 (right)
+<img src="homepage_materials/WG_photo1.png" width="300">   <img src="homepage_materials/ai4nm_workshop_2025.jpg" width="325">
+<br>Photos from our Workshops in Oct 2024 (left) and in Oct 2025 (right)
 <br><br>
 
 ## Motivation of Our Project
