@@ -4,4 +4,4 @@
 - Members of our sub-WG:
 - Kendal Morris, Jianqiu Zheng, Fenghui Yuan, Youmi Oh
 
-- Plan of our sub-WG by October 2025:
+- Progress:
