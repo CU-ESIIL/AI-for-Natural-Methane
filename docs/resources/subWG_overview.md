@@ -1,4 +1,4 @@
-# Our Ongoing Sub-Working Groups
+# Our 4 Sub-Working Groups
 1. **Perspectives on AI and Ethics** led by Shuo Chen and Kevin Rozmiarek.<br>
 2. **Global Methane Budget and Variability** led by Qing Zhu and Gavin McNicol.  <br>
 3. **Disturbance** led by Sparkle Malone.<br>
