@@ -1,6 +1,8 @@
 
 # Progress on our first in-person workshop in October, 2025
 Our second in-person workshop was held from October 1 to 3, 2025 at ESIIL in Boulder, CO. We had an enthusiastic group of 25 in-person team members and 15 virtual members join the workshop.
+![groan_zone](../homepage_materials/ai4nm_workshop_2025.jpg) 
+
 <br><br>
 
 **[Overarching goals]**<br>
