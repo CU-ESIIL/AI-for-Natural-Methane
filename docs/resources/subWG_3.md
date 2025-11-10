@@ -2,4 +2,4 @@
 - Goal of our sub-WG:
 - Members of our sub-WG:
 
-- Plan of our sub-WG by October 2025:
+- Progress: 
