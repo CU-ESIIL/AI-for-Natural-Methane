@@ -4,4 +4,4 @@
   - Qing Zhu (Lawrence Berkeley National Laboratory)
   - Gavin McNicol (University of Illinois Chicago)
     
-- Plan of our sub-WG by October 2025:
+- Progress:

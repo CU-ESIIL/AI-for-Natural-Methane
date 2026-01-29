@@ -14,11 +14,13 @@ copyright: 'Copyright &copy; 2025 University of Colorado Boulder'
 nav:
   - Home: index.md
   - Workshop in 2024: resources/workshop_2024.md
+  - Workshop in 2025: resources/workshop_2025.md
   - Manuscript: resources/manuscript.md
+  - Open-source pyKGML Package: resources/tutorial.md
   - Data Harmonization: resources/data_harmonization.md
   - Sub-Working Group:
        - Overview: resources/subWG_overview.md
-       - Perspectives on KGML-CH4: resources/subWG_1.md
+       - Perspectives on AI and Ethics: resources/subWG_1.md
        - Global Budget and Trends: resources/subWG_2.md
        - Disturbance Ecology: resources/subWG_3.md
        - Microbial Processes: resources/subWG_4.md

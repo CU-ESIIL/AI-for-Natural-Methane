@@ -46,3 +46,7 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Data
+.RDATA
+CH4_Drought/data

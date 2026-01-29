@@ -1,11 +1,9 @@
-# Our Ongoing sub-working groups
-- Perspectives on KGML4CH4 
-- Global budget and trends, regional patterns 
-- Disturbance ecology- ex. Fire, Disease, Salinity
-- Sources and sinks - ex. Microbial processes
+# Our 4 Sub-Working Groups
+<!-- 
+1. **Perspectives on AI and Ethics** led by Shuo Chen and Kevin Rozmiarek.<br>
+2. **Global Methane Budget and Variability** led by Qing Zhu and Gavin McNicol.  <br>
+3. **Disturbance** led by Sparkle Malone.<br>
+4. **Microbial Process** led by Jianqiu Zheng.<br>-->
 
-**Goal: first sub-WG product by our Workshop 2025**
---> Build dataset --> Run a first analysis by Mid-October 2025
-<br><br>
-… and more to come!
+![data_harmonization](../homepage_materials/4subwg.png) 
 <br>

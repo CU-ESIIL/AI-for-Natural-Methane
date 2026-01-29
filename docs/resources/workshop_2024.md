@@ -1,6 +1,8 @@
 
 # Progress on our first in-person workshop in October, 2024
 Our first in-person workshop was held from October 2 to 4, 2024 at ESIIL in Boulder, CO. We had an enthusiastic group of 23 in-person team members and 7 virtual members join the workshop.
+![groan_zone](../homepage_materials/WG_photo1.png) 
+
 <br><br>
 **[Overarching goals]**<br>
 - **1. Harmonize Natural Methane Dataset**: We worked on harmonizing field-based methane fluxes from chamber and eddy-covariance measurements, natural methane fluxes simulated from top-down atmospheric inversions constrained by atmospheric observations, and simulated methane fluxes from bottom-up process-based models. We collected our first set of natural methane datasets during this workshop.
