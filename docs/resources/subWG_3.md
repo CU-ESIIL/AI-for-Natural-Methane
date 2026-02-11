@@ -9,4 +9,6 @@ This working group will explore how drought conditions affect methane emissions 
 ## Members of our sub-WG:
 - Sparkle Malone (Lead)
   
-- Progress: Concept defined, data aquired, analysis begun.
+
+### Progress: 
+Concept defined, data aquired, analysis begun.
