@@ -8,6 +8,16 @@ Welcome to the **AI for Natural Methane (AI4NM)** Working Group — a collaborat
 3. **Grow AI literacy** via open KGML packages and tutorials.<br>
 <br><br>
 
+<h2 style="color:red; font-weight:bold;">
+We are open to accept new members of our working group for 2026!
+</h2>
+Please use this link to fill out the google form:  
+<a href="https://forms.gle/gxKrKoqe1QUxaZ8H9" target="_blank">
+https://forms.gle/gxKrKoqe1QUxaZ8H9
+</a><br>
+If you have any questions, please reach out to your referral or co-PIs listed below.
+<br><br>
+
 ## Working Group Team (As of October 2025)
 **Co-PIs** <br>
 Youmi Oh (youmi.oh@noaa.gov), Licheng Liu (lliu223@wisc.edu), Sparkle Malone (sparkle.malone@yale.edu), Gavin McNicol (gmcnicol@uic.edu)
@@ -32,17 +42,6 @@ Alison Hoyt, Ammara Talib, Avni Malhotra (*group lead*), Ben Gaubert, Ben Riddel
 - This KGML framework will be designed to integrate scientific knowledge from bottom-up and top-down models, machine learning models and multi-source data through knowledge-guided architecture pretraining and training.<br>
 - Specifically, we will harmonize the following four types of natural CH4 datasets within the KGML framework; We will use the bottom-up and top-down estimates of natural CH4 sources and sinks to pretrain the model. We then use observation data from chamber and FLUXNET-CH4 measurements to fine-tune the model.
 <br><be>
-
-<h2 style="color:red; font-weight:bold;">
-We are open to accept new members of our working group for 2026!
-</h2>
-Please use this link to fill out the google form:  
-<a href="https://forms.gle/gxKrKoqe1QUxaZ8H9" target="_blank">
-https://forms.gle/gxKrKoqe1QUxaZ8H9
-</a>
-If you have any questions, please reach out to your referral or co-PIs listed above.
-<br><br>
-
 
 ## Code Repository
 <https://github.com/CU-ESIIL/AI-for-Natural-Methane>
