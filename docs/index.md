@@ -20,7 +20,7 @@ If you have any questions, please reach out to your referral or co-PIs listed be
 
 ## Working Group Team (As of October 2025)
 **Co-PIs** <br>
-Youmi Oh (youmi.oh@noaa.gov), Licheng Liu (lliu223@wisc.edu), Sparkle Malone (sparkle.malone@yale.edu), Gavin McNicol (gmcnicol@uic.edu)
+Licheng Liu (lliu223@wisc.edu), Sparkle Malone (sparkle.malone@yale.edu), Gavin McNicol (gmcnicol@uic.edu), Youmi Oh (youmi.oh@noaa.gov)
 <br><br>
 **All Team** <br>
 Alison Hoyt, Ammara Talib, Avni Malhotra (*group lead*), Ben Gaubert, Ben Riddell-Young, Bradley A. Gay, Colin Quinn, Danielle Potocek, Eric Ward, Etienne Fluet-Chouinard, Fa Li, Fenghui Yuan, Gavin McNicol (*group lead*), Housen Chu, Jennifer Watts, Jianqiu Zheng (*group lead*), Kayla Borton, Kelly Wrighton, Kendalynn Morris, Kevin Rozmiarek (*group lead*), Kunxiaoji Yuan, Kyle Arndt, Licheng Liu, Lori Bruhwiler, Madeline Scyphers, Michael Yonker, Minkyu Moon, Nicole Cai, Qianlai Zhuang, Qing Ying, Qing Zhu (*group lead*), RongChao Dong, Sara Knox, Shuo Chen (*group lead*), Sparkle Malone (*group lead*), Stefan Metzger, Wang Shaoyu, Xiaowei Jia, Xueying Yu, Yi Yang, Yiming Sun, Youmi Oh, Yujie Liu, Zhen Zhang, Zichong Chen <br>
