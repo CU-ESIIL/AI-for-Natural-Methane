@@ -6,7 +6,10 @@ library(terra)
 library(tidyverse)
 library(spatialEco)
 
-load(file="CH4_Drought/data/Fluxnet_Data.RDATA")
+project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"
+
+setwd( project.data.dir)
+load(file="Fluxnet_Data.RDATA")
 
 # Imports the site information
 fluxnet <- ch4.sites.shp %>% 
@@ -46,5 +49,8 @@ for( i in 1:length( fluxnet$SITE_ID)) {
   Topo.df <- rbind( Topo.df, df )
 }
 
-write_csv(Topo.df, '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/Fluxnet_Topography.csv')
+project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"
+
+setwd( project.data.dir)
+write_csv(Topo.df, 'Fluxnet_Topography.csv')
 

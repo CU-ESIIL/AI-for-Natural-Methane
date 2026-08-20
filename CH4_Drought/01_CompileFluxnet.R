@@ -6,20 +6,19 @@ library(sf)
 rm(list=ls())
 
 # Unzip the files needed #####
-data.dir <- '/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/FLUXNET_CH4_T1'
-# COMPILE FLUX NET CH data downloaded from website: This has been changed to include only tier 1 data to avoid isues with connecting with authors.
-setwd(data.dir)
+project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"
+setwd( project.data.dir)
 
 # unzip files and extract HH and DD datasets# 
 
 zip.files <- list.files(data.dir, pattern = ".zip")
 
 for(k in 1:length(zip.files)){
-  unzip(zipfile = file.path(data.dir, zip.files[k]), exdir = file.path("/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"))
+  unzip(zipfile = file.path(data.dir, zip.files[k]), exdir = project.data.dir)
  }
  
 # Import and build Files: ####
-data.dir <- '/Volumes/MaloneLab/Research/Natural_CH4_CO2/data'
+data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"
 folders <- list.files( data.dir, pattern= "FLX_")
 
 CH4.Flux.HH <- data.frame( )
@@ -28,7 +27,7 @@ CH4.Flux.DD <- data.frame( )
 for( i in folders){
   print(i)
   
-  new.dir <- paste('/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/',i, sep="" )
+  new.dir <- paste(data.dir,i, sep="" )
   file.HH <- list.files( new.dir, pattern= "HH", full.names=T)
   file.DD <- list.files( new.dir, pattern= "DD", full.names=T)
   
@@ -56,7 +55,7 @@ CH4.Flux.HH.units <- CH4.Flux.HH %>% mutate( LE_HH = LE_F_ANNOPTLM*1800,
 
 
 # Get site level information table to make a shape_file for downloading spectral data.
-sites <- read.csv( "~/Dropbox (YSE)/Research/Fluxnet_CH4/FluxNetSites.csv") %>% 
+sites <- read.csv( "FluxNetSites.csv") %>% 
   mutate(Latitude = LOCATION_LAT,
          Longitude = LOCATION_LONG) 
 
@@ -72,7 +71,8 @@ ch4.sites.shp <- ch4.sites %>%  st_as_sf(coords = c('Longitude', 'Latitude'),
                                          crs= "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0") %>% 
   select( SITE_ID, SITE_NAME, FLUXNET.CH4, LOCATION_ELEV, IGBP, MAT,MAP,  geometry)
 
-project.dir <-"/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/CH4_Drought"
+data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"
+
 setwd( project.dir)
 
 save(ch4.sites.shp, ch4.sites , CH4.Flux.HH.units, CH4.Flux.DD,

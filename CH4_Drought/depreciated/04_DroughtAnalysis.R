@@ -4,15 +4,25 @@ library(GGally)
 
 rm(list=ls())
 
-load( file='/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/FinalDrought_Data.RDATA')
+config_file <- file.path(getwd(), "CH4_Drought", "config.R")
+if (!file.exists(config_file)) config_file <- "config.R"
+source(config_file)
+
+final_drought_file <- file.path(getwd(), "data", "FinalDrought_Data.RDATA")
+if (!file.exists(final_drought_file)) {
+  final_drought_file <- "/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/FinalDrought_Data.RDATA"
+}
+load(file = final_drought_file)
 
 fluxes.drought_normalized %>% names
  
 # Random Forest Model Development:  ####
 
-Normalizex.spei48.model.rf <- randomForest::randomForest(normalized_Fch4 ~ 
-                                         SPEI48 + ELEV + DI.SPI48.MeanDuration
-                                         + month + VPD_F+TA_F ,
+rf_formula <- as.formula(paste("normalized_Fch4 ~", DROUGHT_INDEX,
+                               "+ ELEV +", DROUGHT_DURATION_VAR,
+                               "+ month + VPD_F + TA_F"))
+
+Normalizex.spei48.model.rf <- randomForest::randomForest(rf_formula,
                                          data= fluxes.drought_normalized,
                                          importance=TRUE )
 
@@ -22,7 +32,7 @@ Normalizex.spei48.model.rf$importance %>% as.data.frame() %>% mutate(vars = rown
 
 
 save( Normalizex.spei48.model.rf, fluxes.drought_normalized,
-      file= '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/DroughtAnalysis.RDATA')
+      file= '/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/DroughtAnalysis.RDATA')
 
 # get the list of variables used in the model:
 
@@ -80,23 +90,23 @@ Normalizex.spei48.model.rf.SA.DF <- sensitivity.df(
   factors = 'month')
 
 save( Normalizex.spei48.model.rf, fluxes.drought_normalized,Normalizex.spei48.model.rf.SA.DF, 
-      file= '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/DroughtAnalysis.RDATA')
+      file= '/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/DroughtAnalysis.RDATA')
 
 
 summary(Normalizex.spei48.model.rf.SA.DF)
 
 Normalizex.spei48.model.rf.SA.DF %>% names()
 
-Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_boxplot(aes(x= SPEI48, y =predictions, col=month ))
+Normalizex.spei48.model.rf.SA.DF %>% filter(target == DROUGHT_INDEX) %>% ggplot( ) + geom_boxplot(aes(x = .data[[DROUGHT_INDEX]], y = predictions, col=month ))
 
 
-month.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_boxplot(aes(x= month, y =predictions)) + geom_hline( yintercept = 0, col="red")
+month.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == DROUGHT_INDEX) %>% ggplot( ) + geom_boxplot(aes(x= month, y =predictions)) + geom_hline( yintercept = 0, col="red")
 
-SPEI.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_smooth(aes(x= SPEI48, y =predictions, col=month)) + geom_hline( yintercept = 0, col="red")
+SPEI.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == DROUGHT_INDEX) %>% ggplot( ) + geom_smooth(aes(x = .data[[DROUGHT_INDEX]], y = predictions, col=month)) + geom_hline( yintercept = 0, col="red")
 
 elevation.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'ELEV')%>% ggplot( ) + geom_smooth(aes(x= ELEV, y =predictions), col="black")
 
-duration.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'DI.SPI48.MeanDuration') %>% ggplot( ) + geom_smooth(aes(x= DI.SPI48.MeanDuration, y =predictions), col="black")
+duration.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == DROUGHT_DURATION_VAR) %>% ggplot( ) + geom_smooth(aes(x = .data[[DROUGHT_DURATION_VAR]], y = predictions), col="black")
 
 TA.plot <- Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'TA_F') %>% ggplot( ) + geom_smooth(aes(x= TA_F, y =predictions), col="black")
 
@@ -117,11 +127,11 @@ sensitivity.plots <- ggarrange(elevation.plot,
 
 
 
-Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48') %>% ggplot( ) + geom_line(aes(x= SPEI48, y =predictions, col=month ))
+Normalizex.spei48.model.rf.SA.DF %>% filter(target == DROUGHT_INDEX) %>% ggplot( ) + geom_line(aes(x = .data[[DROUGHT_INDEX]], y = predictions, col=month ))
 
 Normalizex.spei48.model.rf.SA.DF  %>% ggplot( ) + geom_smooth(aes(x= TA_F, y =predictions) )
 
-Normalizex.spei48.model.rf.SA.DF %>% filter(target == 'SPEI48')  %>% ggplot( ) + geom_smooth(aes(x= SPEI48, y =predictions) )
+Normalizex.spei48.model.rf.SA.DF %>% filter(target == DROUGHT_INDEX)  %>% ggplot( ) + geom_smooth(aes(x = .data[[DROUGHT_INDEX]], y = predictions) )
 Normalizex.spei48.model.rf.SA.DF$NEE_F_ANNOPTLM
 
 Normalizex.spei48.model.rf.SA.DF %>% ggplot( ) + geom_point(aes(x= VPD_F, y =predictions, col=month) )

@@ -6,6 +6,13 @@
 .RData
 .RDataTmp
 /Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/data
+
+/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data
+/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/depreciated
+/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/FIGURES
+/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/outputs
+SiteList.RDATA
+CH4_Drought/Fluxnet_Data.RDATA
 # User-specific files
 .Ruserdata
 

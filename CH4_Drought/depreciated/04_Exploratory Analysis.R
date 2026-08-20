@@ -5,9 +5,27 @@
 library(tidyverse)
 library(GGally)
 
-load( file='/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/FinalDrought_Data.RDATA')
+config_file <- file.path(getwd(), "CH4_Drought", "config.R")
+if (!file.exists(config_file)) config_file <- "config.R"
+source(config_file)
 
-fluxes.drought <-Drought.DF %>% filter( !is.na(FCH4_F_ANNOPTLM)) # the dataframe to use:
+project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data"
+setwd( project.data.dir)
+
+load( file='FinalDrought_Data.RDATA')
+
+if (exists("fluxes.drought") && "geometry" %in% names(fluxes.drought)) {
+  fluxes.drought$geometry <- NULL
+}
+if (exists("Drought.DF.final") && "geometry" %in% names(Drought.DF.final)) {
+  Drought.DF.final$geometry <- NULL
+}
+
+if (!exists("fluxes.drought")) {
+  fluxes.drought <- Drought.DF.final %>% filter(!is.na(FCH4_F_ANNOPTLM))
+} else {
+  fluxes.drought <- fluxes.drought %>% filter(!is.na(FCH4_F_ANNOPTLM))
+}
 
 fluxes.drought_reordered <- fluxes.drought %>%
   group_by(SITE_ID) %>%
@@ -16,12 +34,14 @@ fluxes.drought_reordered <- fluxes.drought %>%
   mutate(SITE_ID = fct_reorder(SITE_ID, order_metric))
 
 
-fluxes.drought_reordered %>% ggplot( aes(y = SITE_ID, x= SPEI1)) + geom_boxplot() + geom_vline(xintercept = -1, color = "maroon",) +
-  geom_vline(xintercept = 0, color = "springgreen3",) +
+fluxes.drought_reordered %>% ggplot(aes(y = SITE_ID, x = .data[[DROUGHT_INDEX]])) + geom_boxplot() + geom_vline(xintercept = DROUGHT_THRESHOLD, color = "maroon",) +
+  geom_vline(xintercept = WET_THRESHOLD, color = "springgreen3",) +
   theme(text = element_text(size = 5),
-        axis.text.x = element_text(angle = 90, hjust = 1))
+        axis.text.x = element_text(angle = 90, hjust = 1)) + theme_bw() + ylab('FLUXNET Site') + 
+  xlab('SPEI')
 
 names(fluxes.drought)
+theme_bw()
 
 # kruskal ####
 drought.kruskal.results <- data.frame()
@@ -31,12 +51,14 @@ for( site in fluxes.drought$SITE_ID %>% unique){
   print(site)
   subset <- fluxes.drought %>% filter( SITE_ID == site)
   
-  drought.indx <- names(subset)[21:34]
+  drought.indx <- DROUGHT_INDEX
   
   for( i in 1:length(drought.indx)){
     print(drought.indx[i])
     
-    subset.drought <- subset %>% mutate(drought = case_when( subset[, drought.indx[i]] < -1~"Drought" , subset[, drought.indx[i]] > -1~"No Drought"))
+    subset.drought <- subset %>%
+      mutate(drought = case_when(.data[[drought.indx[i]]] <= DROUGHT_THRESHOLD ~ "Drought",
+                                 .data[[drought.indx[i]]] > DROUGHT_THRESHOLD ~ "No Drought"))
     
     
     
@@ -47,11 +69,11 @@ for( site in fluxes.drought$SITE_ID %>% unique){
       try(  means <- reframe( subset.drought, .by=drought, mean=mean(FCH4_F_ANNOPTLM, na.rm=T), SE= sd(FCH4_F_ANNOPTLM, na.rm=T)/length(FCH4_F_ANNOPTLM)), silent =T)
       
       kruskal.results <- data.frame(Kpvalue = kt$p.value,
-                                    drought.mean = mean(subset.drought$FCH4_F_ANNOPTLM[subset$drought == "Drought"], na.rm=T),
+                                    drought.mean = mean(subset.drought$FCH4_F_ANNOPTLM[subset.drought$drought == "Drought"], na.rm=T),
                                     drought.sd = sd(subset.drought$FCH4_F_ANNOPTLM[subset.drought$drought == "Drought"], na.rm=T), 
                                     normal.mean = mean(subset.drought$FCH4_F_ANNOPTLM[subset.drought$drought != "Drought"], na.rm=T),
                                     normal.sd = sd(subset.drought$FCH4_F_ANNOPTLM[subset.drought$drought != "Drought"], na.rm=T),
-                                    Drought.IDX = drought.indx[i])
+                                    Drought.IDX = drought.indx[i], SITE_ID = site)
       
       try( drought.kruskal.results <- rbind(drought.kruskal.results, kruskal.results), silent =T)
       try(rm( kruskal.results, kt, pw), silent =T)
@@ -76,19 +98,25 @@ drought.kruskal.results %>% filter(Kpvalue <= 0.05 ) %>% ggplot( ) + geom_boxplo
 
 drought.kruskal.results %>% names
 
-save( fluxes.drought, file= '~/YSE Dropbox/Sparkle Malone/Research/CH4_Drought/data/Drought_Analysis.RDATA' )
-save( drought.test.kruskal, file= '~/YSE Dropbox/Sparkle Malone/Research/CH4_Drought/data/Results_kruskal.RDATA' )
+save( fluxes.drought, file= 'Drought_Analysis.RDATA' )
+save( drought.kruskal.results, file= 'Results_kruskal.RDATA' )
 
 
-fluxes.drought %>% ggplot(aes( SPEI1)) + geom_density() + theme_bw() + xlab('SPEI')
+fluxes.drought %>% ggplot(aes(.data[[DROUGHT_INDEX]])) + geom_density() + theme_bw() + xlab(DROUGHT_INDEX)
 
-drought.data <- fluxes.drought %>% filter (SPEI1 <= -1) %>% na.omit()
+drought.data <- fluxes.drought %>% filter(.data[[DROUGHT_INDEX]] <= DROUGHT_THRESHOLD) %>% na.omit()
 drought.data$SITE_ID %>% unique() %>% length
 
-drought.test.kruskal2 <- drought.test.kruskal %>% left_join(fluxes.drought %>% filter( drought == "Drought") %>% reframe(.by=SITE_ID, SPEI1.Drought.mean = mean(SPEI1) %>% round(3), 
-                                                                                                                         SPEI1.Drought.max = min(SPEI1) %>% round(3),
-                                                                                                                         Month=month %>% as.numeric), by = 'SITE_ID') 
-fluxes.drought.SPEI <- fluxes.drought %>% mutate(SPEI.r = SPEI1 %>% round(1)) %>% reframe( .by=c(SITE_ID,SPEI.r),  FCH4_F_ANNOPTLM = mean(FCH4_F_ANNOPTLM, na.rm=T))
+drought.test.kruskal2 <- drought.kruskal.results %>%
+  left_join(fluxes.drought %>%
+              filter(drought == "Drought") %>%
+              reframe(.by = SITE_ID,
+                      SPEI.Drought.mean = mean(.data[[DROUGHT_INDEX]]) %>% round(3),
+                      SPEI.Drought.max = min(.data[[DROUGHT_INDEX]]) %>% round(3),
+                      Month = month %>% as.numeric), by = 'SITE_ID')
+fluxes.drought.SPEI <- fluxes.drought %>%
+  mutate(SPEI.r = .data[[DROUGHT_INDEX]] %>% round(1)) %>%
+  reframe(.by = c(SITE_ID, SPEI.r), FCH4_F_ANNOPTLM = mean(FCH4_F_ANNOPTLM, na.rm=T))
 
 
 # Add the month of the drought.                         
@@ -113,14 +141,14 @@ for( site in unique(fluxes.drought_normalized_data_zscore.df$SITE_ID )){
   print(site)
   subset <- fluxes.drought_normalized_data_zscore.df %>% filter( SITE_ID == site)
   
-  drought.indx <- names(subset)[21:34]
+  drought.indx <- DROUGHT_INDEX
   
   if( length(  subset$SITE_ID) > 1){
     for( i in 1:length(drought.indx)){
       print(drought.indx[i])
       
       try({flux = subset[,'normalized_Fch4_zscore'] 
-      index = subset[, drought.indx[i]] 
+      index = subset[[drought.indx[i]]]
       lm.model = lm(  flux  ~  index) %>% summary
       results = data.frame(SITE_ID = site )
       results$slope = lm.model$coefficients[2]
@@ -140,5 +168,6 @@ drought.test.lm.SPEI %>%  ggplot(aes( slope)) + geom_density(aes( col =Drought.I
 
 
 drought.test.lm.SPEI %>%  ggplot(aes(y= slope, x= Drought.IDX)) + geom_boxplot() 
-
-save( drought.test.lm.SPEI, file= '/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/Results_LM_SPEI.RDATA' )
+project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data"
+setwd( project.data.dir)
+save( drought.test.lm.SPEI, file= 'Results_LM_SPEI.RDATA' )

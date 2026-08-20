@@ -5,9 +5,14 @@ library(sf)
 library(terra)
 library(AOI)
 
+analysis.dir <- file.path(getwd(), "CH4_Drought")
+if (!file.exists(file.path(analysis.dir, "config.R"))) analysis.dir <- getwd()
+config_file <- file.path(analysis.dir, "config.R")
+source(config_file)
+
 # Extract Drought Indices for sites: ####
-project.dir <-"/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/CH4_Drought"
-setwd( project.dir)
+project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data"
+setwd(project.data.dir)
 
 load(file="Fluxnet_Data.RDATA")
 
@@ -65,25 +70,27 @@ nc.files <- list.files(path='/Volumes/MaloneLab/Research/Natural_CH4_CO2/Drought
            SPI6 = SPI6$SPEI1)
 
   # Save the data:
-save( drought.data.fluxnet.sites.final, file='/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/CH4_Drought/data/ECMWF_FLUXNET_CH4.RDATA' )
+save( drought.data.fluxnet.sites.final, file='/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/ECMWF_FLUXNET_CH4.RDATA' )
 
 # Merge the flux data with the drought indices: ####
-rm(list=ls())
+rm(list=setdiff(ls(), c("analysis.dir", "config_file")))
+source(config_file)
 
-project.dir <-"/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/CH4_Drought"
-setwd( project.dir)
+project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data"
+setwd(project.data.dir)
 
 load(file="Fluxnet_Data.RDATA")
-load(file='/Users/sm3466/YSE Dropbox/Sparkle Malone/Research/CH4_Drought/data/ECMWF_FLUXNET_CH4.RDATA' )
+load(file='/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought/data/ECMWF_FLUXNET_CH4.RDATA' )
 
 # format the time elements to prepare to join:
 
 global <- aoi_get(country= c("Europe","Asia" ,"North America", "South America", "Australia","Africa", "New Zealand"))
 
-drought <- drought.data.fluxnet.sites.final %>% mutate(YearMon = format(time, "%Y-%m"),
-                                                       drought = case_when(SPEI1 <= -1 ~'Drought',
-                                                                           SPEI1 > -1 ~'normal',
-                                                                           SPEI1 > 1 ~'wet'))
+drought <- drought.data.fluxnet.sites.final %>%
+  mutate(YearMon = format(time, "%Y-%m"),
+         drought = case_when(.data[[DROUGHT_INDEX]] <= DROUGHT_THRESHOLD ~ 'Drought',
+                             .data[[DROUGHT_INDEX]] >= WET_THRESHOLD ~ 'wet',
+                             .default = 'normal'))
 
 # TImestamp formatting:
 CH4.Flux.DD <- CH4.Flux.DD %>% mutate( Date = TIMESTAMP %>% as.character %>% as.Date( format='%Y%m%d'),
@@ -93,5 +100,5 @@ CH4.Flux.DD <- CH4.Flux.DD %>% mutate( Date = TIMESTAMP %>% as.character %>% as.
 
 fluxes.drought <- CH4.Flux.DD %>% full_join( drought, by = c('YearMon', 'SITE_ID'))
 
-fluxes.drought %>% ggplot(aes(x= SPEI1, y=SITE_ID)) + geom_boxplot()
+fluxes.drought %>% ggplot(aes(x = .data[[DROUGHT_INDEX]], y=SITE_ID)) + geom_boxplot()
 fluxes.drought %>% ggplot(aes(x= FCH4_F_ANNOPTLM, col=drought)) + geom_boxplot() + facet_wrap(~SITE_ID)
