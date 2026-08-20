@@ -13,7 +13,16 @@
 
 rm(list = ls())
 script_file <- sub("^--file=", "", commandArgs(FALSE)[grepl("^--file=", commandArgs(FALSE))][1])
-analysis_dir <- if (!is.na(script_file)) dirname(normalizePath(script_file)) else getwd()
+analysis_dir <- if (!is.na(script_file)) {
+  dirname(normalizePath(script_file))
+} else {
+  # Interactive run: pick whichever candidate holds config.R (project root or CH4_Drought).
+  cand <- c(getwd(), file.path(getwd(), "CH4_Drought"),
+            "/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought")
+  hit <- cand[file.exists(file.path(cand, "config.R"))]
+  if (length(hit)) hit[1] else stop(
+    "Could not find config.R. setwd() to the CH4_Drought folder (or its parent) and rerun.")
+}
 source(file.path(analysis_dir, "config.R"))
 source(file.path(analysis_dir, "io_helpers.R"))
 source(file.path(analysis_dir, "temperature_index.R"))
@@ -137,8 +146,16 @@ adjust_tropical_share <- function(reg_cfg, tropical_share) {
 # ---- 1. global vs regional headline comparison -------------------------------
 global_summary <- read.csv(file.path(analysis_dir, "outputs", "extreme_emissions_projection",
                                      "extreme_emissions_summary_2100.csv"), stringsAsFactors = FALSE)
-regional <- read.csv(file.path(analysis_dir, "outputs", "regional_projection",
-                               "regional_global_projection.csv"), stringsAsFactors = FALSE)
+# Headline regional projection = variable inundation (19c) when available; the
+# fixed-area projection (19) is retained as a comparison. Falls back to fixed area
+# if 19c has not been run.
+reg_var_f <- file.path(analysis_dir, "outputs", "regional_projection_inundation",
+                       "regional_global_projection_inundation.csv")
+reg_fix_f <- file.path(analysis_dir, "outputs", "regional_projection",
+                       "regional_global_projection.csv")
+HEADLINE_AREA <- if (file.exists(reg_var_f)) "variable inundation" else "fixed area"
+message("Headline regional projection: ", HEADLINE_AREA)
+regional <- read.csv(if (file.exists(reg_var_f)) reg_var_f else reg_fix_f, stringsAsFactors = FALSE)
 regional_2100 <- regional[regional$year == PROJECTION_END_YEAR, ]
 projection_compare <- merge(
   global_summary[, c("ssp", "additional_Tg_per_yr_2100", "cumulative_Tg_2020_2100")],
@@ -149,6 +166,18 @@ names(projection_compare) <- sub("additional_Tg_per_yr_2100", "site_scaled_Tg_pe
 names(projection_compare) <- sub("additional_Tg_per_yr_median", "regional_Tg_per_yr_2100", names(projection_compare))
 projection_compare$regional_minus_site_scaled <- projection_compare$regional_Tg_per_yr_2100 -
   projection_compare$site_scaled_Tg_per_yr_2100
+projection_compare$headline_area_mode <- HEADLINE_AREA
+# fixed-area comparison: isolate how much of the regional headline is the
+# inundation-area effect (variable minus fixed at 2100).
+if (file.exists(reg_var_f) && file.exists(reg_fix_f)) {
+  reg_fixed_2100 <- read.csv(reg_fix_f, stringsAsFactors = FALSE)
+  reg_fixed_2100 <- reg_fixed_2100[reg_fixed_2100$year == PROJECTION_END_YEAR,
+                                   c("ssp", "additional_Tg_per_yr_median")]
+  names(reg_fixed_2100)[2] <- "fixed_area_Tg_per_yr_2100"
+  projection_compare <- merge(projection_compare, reg_fixed_2100, by = "ssp", all.x = TRUE)
+  projection_compare$inundation_effect_Tg_per_yr_2100 <-
+    projection_compare$regional_Tg_per_yr_2100 - projection_compare$fixed_area_Tg_per_yr_2100
+}
 projection_compare$preferred_headline <- TRUE
 save_output_csv(projection_compare, out_rel("projection_global_vs_regional_2100.csv"), analysis_dir)
 
@@ -169,8 +198,14 @@ sparse_bins <- bins[bins$sparse_bin, ]
 save_output_csv(sparse_bins, out_rel("sparse_response_bins.csv"), analysis_dir)
 
 # ---- 3. regional uncertainty flags -------------------------------------------
-regional_bd <- read.csv(file.path(analysis_dir, "outputs", "regional_projection",
-                                  "regional_breakdown_2100.csv"), stringsAsFactors = FALSE)
+# Uncertainty flags on the headline (variable-inundation) band breakdown when
+# available, else the fixed-area breakdown.
+reg_bd_var <- file.path(analysis_dir, "outputs", "regional_projection_inundation",
+                        "regional_breakdown_2100.csv")
+reg_bd_fix <- file.path(analysis_dir, "outputs", "regional_projection",
+                        "regional_breakdown_2100.csv")
+regional_bd <- read.csv(if (file.exists(reg_bd_var)) reg_bd_var else reg_bd_fix,
+                        stringsAsFactors = FALSE)
 regional_bd$interval_width <- regional_bd$hi - regional_bd$lo
 regional_bd$crosses_zero <- regional_bd$lo < 0 & regional_bd$hi > 0
 regional_bd$few_sites <- regional_bd$n_sites < 10
@@ -178,6 +213,11 @@ regional_bd$priority_limitation <- regional_bd$few_sites | regional_bd$crosses_z
 save_output_csv(regional_bd, out_rel("regional_uncertainty_flags_2100.csv"), analysis_dir)
 
 # ---- 4. deterministic sensitivity --------------------------------------------
+# NOTE: sections 4-5 characterize the FLUX-RESPONSE component of the projection
+# (compound-class response x budget x warming) with inundated area held fixed.
+# Sensitivity to the inundation-area assumption itself (the e_dry/e_wet
+# elasticities) is propagated separately by 19c's Monte Carlo and reported in
+# outputs/regional_projection_inundation/ (regional_vs_fixed_area_2100.csv).
 variant_defs <- list(
   baseline = list(reg_cfg = default_reg_cfg, budget = GLOBAL_WETLAND_BUDGET_TG,
                   dry = MOISTURE_DRY_SENS, wet = MOISTURE_WET_SENS),

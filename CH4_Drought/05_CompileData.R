@@ -1,10 +1,18 @@
 library(tidyverse)
 library(sf)
 
-config_file <- file.path(getwd(), "CH4_Drought", "config.R")
-if (!file.exists(config_file)) config_file <- "config.R"
-source(config_file)
-source(file.path(dirname(config_file), "temperature_index.R"))
+# Resolve the folder holding config.R robustly, independent of the (mutable) working
+# directory: this script setwd()s to the lab server below, which can otherwise strand
+# a later interactive run. Order: --file, getwd()[/CH4_Drought], then the project path.
+.a <- commandArgs(FALSE); .f <- .a[grepl("^--file=", .a)]
+.cand <- if (length(.f)) dirname(normalizePath(sub("^--file=", "", .f[1]), mustWork = FALSE)) else character(0)
+.cand <- c(.cand, getwd(), file.path(getwd(), "CH4_Drought"),
+           "/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought")
+.hit <- .cand[file.exists(file.path(.cand, "config.R"))]
+if (!length(.hit)) stop("Could not find config.R. setwd() to the CH4_Drought folder (or its parent) and rerun.")
+analysis_dir <- .hit[1]
+source(file.path(analysis_dir, "config.R"))
+source(file.path(analysis_dir, "temperature_index.R"))
 
 # Compile the data:
 project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"
@@ -79,6 +87,12 @@ names(Drought.DF)
 
 Drought.DF.final <- fluxnet %>% as.data.frame() %>%  full_join (Drought.DF, by = 'SITE_ID')
 
+# Drop the sf geometry (sfc) column so the saved tables are plain data.frames.
+# Downstream scripts (06/07/11/12/21/...) do not all load {sf}, and a leftover
+# sfc list-column breaks dplyr::filter() under recent dplyr/vctrs. Mapping uses
+# ch4.sites.shp (from Fluxnet_Data.RDATA) instead, so geometry is not needed here.
+Drought.DF.final[["geometry"]] <- NULL
+
 # Data Prep: #####
 fluxes.drought <- Drought.DF.final %>% filter( !is.na(FCH4_F_ANNOPTLM)) %>% mutate( month = as.factor(month))
 
@@ -94,7 +108,7 @@ fluxes.drought.normal <- fluxes.drought %>%
   filter(normal == 1) %>%
   reframe(.by = SITE_ID, FCH4.normal = mean(FCH4_F_ANNOPTLM, na.rm = TRUE))
 
-fluxes.drought_normalized <- fluxes.drought %>% left_join(fluxes.drought.normal, by = join_by(SITE_ID) ) %>% mutate(normalized_Fch4 = FCH4_F_ANNOPTLM -  FCH4.normal) %>% filter( IGBP != "CRO") %>% na.omit
+fluxes.drought_normalized <- fluxes.drought %>% left_join(fluxes.drought.normal, by = join_by(SITE_ID) ) %>% mutate(normalized_Fch4 = FCH4_F_ANNOPTLM -  FCH4.normal) %>% filter( !IGBP %in% EXCLUDE_IGBP, !SITE_ID %in% EXCLUDE_SITES ) %>% na.omit
 
 setwd( project.data.dir)
 save( Drought.DF.final,fluxes.drought , fluxes.drought_normalized,  file='FinalDrought_Data.RDATA')

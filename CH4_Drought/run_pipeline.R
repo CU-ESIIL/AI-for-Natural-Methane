@@ -35,6 +35,9 @@
 #   19_RegionalProjection.R          Region-weighted global projection by latitude band
 #   20_ContinentChoropleth.R        Continent choropleth from region-weighted contributions
 #   21_SensitivityAndDiagnostics.R   Sensitivity checks and diagnostic flags
+#   21b_AxisOrthogonality.R          SPEI (moisture) vs STI (temperature) axis
+#                             (non-)orthogonality: correlation, chi-square/Cramer's V,
+#                             observed-vs-independence joint occupancy, VIF
 #
 # Every output is written to outputs/ and mirrored to the server (io_helpers.R).
 #
@@ -44,6 +47,8 @@
 #   Rscript run_pipeline.R data         # 01-05 upstream data build
 #   Rscript run_pipeline.R regional     # 19 regional projection + continent map
 #   Rscript run_pipeline.R all          # data -> analysis -> models (everything)
+#   Rscript run_pipeline.R refresh      # 05 -> analysis -> models (rebuild after a
+#                                       #   site-selection change; SKIPS the slow 01-04)
 # ===========================================================================
 
 # Locate the analysis directory (the folder holding config.R). Robust to being
@@ -62,7 +67,8 @@ locate_analysis_dir <- function() {
     p <- tryCatch(rstudioapi::getSourceEditorContext()$path, error = function(e) "")
     if (nzchar(p)) cand <- c(cand, dirname(normalizePath(p, mustWork = FALSE)))
   }
-  cand <- c(cand, getwd(), file.path(getwd(), "CH4_Drought"))
+  cand <- c(cand, getwd(), file.path(getwd(), "CH4_Drought"),
+            "/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought")
   hit <- cand[file.exists(file.path(cand, "config.R"))]
   if (length(hit)) return(hit[1])
   stop("Could not find config.R. Set the working directory to the CH4_Drought folder, ",
@@ -94,23 +100,32 @@ STEP_DOC <- c(
   "16_DroughtResponseCurves_SPEI.R"= "CH4-vs-SPEI response curves, FLUXNET + all models",
   "17_ScenarioFrequencies_CMIP6.R" = "future hot/cold/dry/wet frequencies per SSP",
   "18_ExtremeEmissionsProjection.R"= "additional wetland CH4 to 2100 (IPF joint + MC range)",
-  "19_RegionalProjection.R"        = "region-weighted global projection (latitude bands x budget share)",
+  "19_RegionalProjection.R"        = "region-weighted global projection, FIXED area (comparison)",
+  "19c_RegionalProjection_InundationVarying.R" = "region-weighted projection, VARIABLE inundation (headline)",
   "20_ContinentChoropleth.R"      = "continent choropleth from region-weighted contributions",
-  "21_SensitivityAndDiagnostics.R" = "projection sensitivities and diagnostic flags")
+  "21_SensitivityAndDiagnostics.R" = "projection sensitivities and diagnostic flags",
+  "21b_AxisOrthogonality.R"        = "SPEI vs STI axis (non-)orthogonality: corr, Cramer's V, joint vs independence, VIF",
+  "22_Figures.R"                   = "rebuild manuscript figures from outputs")
 
 PIPELINE <- list(
   data     = c("01_CompileFluxnet.R", "02_Terra_SVWC.R", "03_Topography.R",
                "04_DroughtIndices_Sites.R", "05_CompileData.R"),
   analysis = c("06_BuildAnalysisTable.R",
                "07_ConditionChanges.R", "08_RefitRandomForest.R", "09_RF_Importance.R",
-               "10_Figure_MAP.R", "11_Linear.R", "12_Q10.R"),
+               "10_Figure_MAP.R", "11_Linear.R", "12_Q10.R", "21b_AxisOrthogonality.R"),
+  # 19c (variable inundation) is the headline projection and runs after 19 (fixed,
+  # kept for comparison). 19b (elasticity calibration) is intentionally EXCLUDED
+  # from the automated run because it is slow (WAD2M x SPEI + bootstrap); 19c reads
+  # its saved data/inundation_elasticities.csv, or falls back to config defaults.
   models   = c("13_TEM_MDM_ModelOutputs.R", "14_FLUXNET_ShortLongDrought.R",
                "15_Compare_FLUXNET_Models.R",
                "16_DroughtResponseCurves_SPEI.R",
                "17_ScenarioFrequencies_CMIP6.R", "18_ExtremeEmissionsProjection.R",
-               "19_RegionalProjection.R", "20_ContinentChoropleth.R",
-               "21_SensitivityAndDiagnostics.R"),
-  regional = c("19_RegionalProjection.R", "20_ContinentChoropleth.R",
+               "19_RegionalProjection.R", "19c_RegionalProjection_InundationVarying.R",
+               "20_ContinentChoropleth.R",
+               "21_SensitivityAndDiagnostics.R", "21b_AxisOrthogonality.R"),
+  regional = c("19_RegionalProjection.R", "19c_RegionalProjection_InundationVarying.R",
+               "20_ContinentChoropleth.R",
                "21_SensitivityAndDiagnostics.R"))
 STEP_GROUPS <- list(
   default  = PIPELINE$models,                                   # the 13-21 block
@@ -118,11 +133,17 @@ STEP_GROUPS <- list(
   regional = PIPELINE$regional,
   analysis = PIPELINE$analysis,
   data     = PIPELINE$data,
+  # Rebuild after a site-selection change (EXCLUDE_IGBP / EXCLUDE_SITES): re-run 05
+  # (FinalDrought) through the analysis and model/projection blocks, but skip the slow
+  # upstream 01-04, which do not depend on which sites are kept. (steps are de-duped.)
+  refresh  = c("05_CompileData.R", PIPELINE$analysis, PIPELINE$models, "22_Figures.R"),
   all      = c(PIPELINE$data, PIPELINE$analysis, PIPELINE$models))
 
 args  <- commandArgs(trailingOnly = TRUE)
 group <- if (length(args) >= 1 && args[1] %in% names(STEP_GROUPS)) args[1] else "default"
-steps <- STEP_GROUPS[[group]]
+# De-duplicate while preserving order: 21b_AxisOrthogonality.R appears in both the
+# analysis and models blocks, so "all" would otherwise run it twice.
+steps <- unique(STEP_GROUPS[[group]])
 
 rscript <- file.path(R.home("bin"), "Rscript")
 log_dir <- file.path(analysis_dir, "outputs", "pipeline_log")
@@ -147,12 +168,15 @@ for (step in steps) {
   }
   message(sprintf("  RUN   %-32s %s", step, desc))
   t0 <- Sys.time()
+  # Per-step log so a failure's output is not overwritten by the next step.
+  step_log <- file.path(log_dir, paste0("run_", group, "_", stamp, "__", sub("\\.R$", "", step), ".log"))
   # Use relative script names from analysis_dir. Passing a quoted absolute path
   # through Rscript can corrupt spaces in this Dropbox path on macOS.
-  rc <- system2(rscript, step, stdout = log_file, stderr = log_file, env = character(), wait = TRUE)
+  rc <- system2(rscript, step, stdout = step_log, stderr = step_log, env = character(), wait = TRUE)
   secs <- as.numeric(difftime(Sys.time(), t0, units = "secs"))
   status <- if (rc == 0) "ok" else "FAILED"
-  message(sprintf("  %-6s %s (%.1fs)", status, step, secs))
+  message(sprintf("  %-6s %s (%.1fs)%s", status, step, secs,
+                  if (rc != 0) paste0("  -> ", step_log) else ""))
   record <- rbind(record, data.frame(step = step, status = status, seconds = round(secs, 1)))
   if (rc != 0 && STOP_ON_ERROR) { message("Aborting: STOP_ON_ERROR=TRUE"); break }
 }

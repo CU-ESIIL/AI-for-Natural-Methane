@@ -1,10 +1,19 @@
 library(tidyverse)
 library(sf)
-library(AOI)
+# NOTE: {AOI} is no longer used for the basemap. AOI imports `%>%` from {sf}, which
+# recent sf versions no longer re-export, so `library(AOI)` fails ("object '%>%' is
+# not exported by 'namespace:sf'"). The basemap is read from the local Natural Earth
+# shapefile (config CONTINENT_SHAPEFILE) instead, which is also more reproducible.
 
-config_file <- file.path(getwd(), "CH4_Drought", "config.R")
-if (!file.exists(config_file)) config_file <- "config.R"
-source(config_file)
+# Resolve the folder holding config.R robustly (see 05_CompileData.R).
+.a <- commandArgs(FALSE); .f <- .a[grepl("^--file=", .a)]
+.cand <- if (length(.f)) dirname(normalizePath(sub("^--file=", "", .f[1]), mustWork = FALSE)) else character(0)
+.cand <- c(.cand, getwd(), file.path(getwd(), "CH4_Drought"),
+           "/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought")
+.hit <- .cand[file.exists(file.path(.cand, "config.R"))]
+if (!length(.hit)) stop("Could not find config.R. setwd() to the CH4_Drought folder (or its parent) and rerun.")
+analysis_dir <- .hit[1]
+source(file.path(analysis_dir, "config.R"))
 
 #remotes::install_github("mikejohnson51/AOI", quite=F)
 
@@ -16,9 +25,9 @@ load( file='FinalDrought_Data.RDATA')
 
 fluxes.drought <-Drought.DF %>% filter( !is.na(FCH4_F_ANNOPTLM)) # the dataframe to use:
 
-rm.INGBP <- c('CRO', 'URB',"SNO") # Make a list of the IGBP classes to remove
+rm.INGBP <- EXCLUDE_IGBP # centralized in config.R (CRO/URB/SNO/WAT) so 05/06/10 match
 
-sites.igbp <- ch4.sites.shp %>% filter(!IGBP %in% rm.INGBP)
+sites.igbp <- ch4.sites.shp %>% filter(!IGBP %in% rm.INGBP, !SITE_ID %in% EXCLUDE_SITES)
 study.sites.igbp <-sites.igbp$SITE_ID 
 
 
@@ -33,7 +42,7 @@ all.sites <- fluxes.drought %>% filter(  SITE_ID %in%  study.sites.igbp) %>% sel
 
 extreme.events <- rbind(Wet.sites, Dry.sites) %>% distinct
 
-aoi.terrestrial <- aoi_get(country= c("Europe","Asia" ,"North America", "South America", "Australia","Africa", "New Zealand"))
+aoi.terrestrial <- sf::st_read(file.path(analysis_dir, CONTINENT_SHAPEFILE), quiet = TRUE)
 
 
 all.normal.map <- ggplot() + geom_sf( data=aoi.terrestrial, fill="white", col="grey60")+ 

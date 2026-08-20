@@ -2,10 +2,15 @@
 library(tidyverse)
 library(broom)
 
-config_file <- file.path(getwd(), "CH4_Drought", "config.R")
-if (!file.exists(config_file)) config_file <- "config.R"
-source(config_file)
-analysis_dir <- dirname(normalizePath(config_file))
+# Resolve the folder holding config.R robustly (see 05_CompileData.R).
+.a <- commandArgs(FALSE); .f <- .a[grepl("^--file=", .a)]
+.cand <- if (length(.f)) dirname(normalizePath(sub("^--file=", "", .f[1]), mustWork = FALSE)) else character(0)
+.cand <- c(.cand, getwd(), file.path(getwd(), "CH4_Drought"),
+           "/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought")
+.hit <- .cand[file.exists(file.path(.cand, "config.R"))]
+if (!length(.hit)) stop("Could not find config.R. setwd() to the CH4_Drought folder (or its parent) and rerun.")
+analysis_dir <- .hit[1]
+source(file.path(analysis_dir, "config.R"))
 source(file.path(analysis_dir, "temperature_index.R"))
 
 project.data.dir <-"/Volumes/MaloneLab/Research/Natural_CH4_CO2/data/"
@@ -313,13 +318,14 @@ ggsave(Rref.linear.sites.plot ,
 
 # Create a Map of the sites showing the slope:
 library(sf)
-library(AOI)
+# {AOI} dropped: it imports `%>%` from {sf}, which recent sf no longer re-exports,
+# so `library(AOI)` errors. Basemap now read from the local Natural Earth shapefile.
 
 site.Q10.Slope <- FLUXNET_Q10_normalized_Linear %>% reframe( .by=SITE_ID, Q10.slope)
 
 Q10.linear.results.shp <- Q10.linear.results %>% left_join(ch4.sites, by='SITE_ID') %>% st_as_sf( coords = c("LOCATION_LONG" , "LOCATION_LAT"), crs = 4326) %>% mutate(Response =case_when(Q10.slope <= 0 ~ 'Dampened', .default='Enhanced') %>% as.factor) %>% filter(SITE_ID %in% all.sites$SITE_ID)
 
-aoi.terrestrial <- aoi_get(country= c("Europe","Asia" ,"North America", "South America", "Australia","Africa", "New Zealand"))
+aoi.terrestrial <- sf::st_read(file.path(analysis_dir, CONTINENT_SHAPEFILE), quiet = TRUE)
 
 
 library(RColorBrewer)

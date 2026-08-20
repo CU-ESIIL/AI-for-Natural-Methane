@@ -31,8 +31,16 @@ if (!requireNamespace("rnaturalearth", quietly = TRUE) ||
   stop("Install continent polygons source: install.packages(c('rnaturalearth','rnaturalearthdata'))")
 
 MAP_SSP <- "SSP2-4.5"
-bd <- read.csv(file.path(analysis_dir, "outputs", "regional_projection", "continent_contributions_2100.csv"),
-               stringsAsFactors = FALSE)
+# Headline = variable-inundation continent contributions (19c); fall back to the
+# fixed-area contributions (19) if 19c has not been run.
+cont_var <- file.path(analysis_dir, "outputs", "regional_projection_inundation",
+                      "continent_contributions_2100_inundation.csv")
+cont_fix <- file.path(analysis_dir, "outputs", "regional_projection",
+                      "continent_contributions_2100.csv")
+cont_file <- if (file.exists(cont_var)) cont_var else cont_fix
+AREA_MODE <- if (identical(cont_file, cont_var)) "variable inundation" else "fixed area"
+message("Continent contributions source: ", AREA_MODE, " (", cont_file, ")")
+bd <- read.csv(cont_file, stringsAsFactors = FALSE)
 bd <- bd[bd$ssp == MAP_SSP, ]
 
 # Continent polygons from Natural Earth Admin-0 countries via rnaturalearth,
@@ -57,7 +65,8 @@ p <- ggplot(cont) +
                        name = expression(atop("Additional CH"[4], "(Tg yr"^-1*", 2100)"))) +
   coord_sf(crs = "+proj=robin", ylim = c(-6.2e6, 8.6e6), expand = FALSE) +
   labs(title = paste0("Continental contribution to global extreme-driven CH4 by 2100 (", MAP_SSP, ")"),
-       subtitle = "Region-weighted; continents sum to the global total (WAD2M allocation)") +
+       subtitle = paste0("Region-weighted (", AREA_MODE,
+                         "); continents sum to the global total (WAD2M allocation)")) +
   theme_minimal(base_size = 12) +
   theme(panel.grid = element_line(color = "grey90", linewidth = 0.2),
         axis.text = element_blank(), axis.title = element_blank(), legend.position = "right")

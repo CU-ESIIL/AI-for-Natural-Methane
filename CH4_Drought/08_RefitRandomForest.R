@@ -7,7 +7,13 @@ script_file <- sub("^--file=", "", commandArgs(FALSE)[grepl("^--file=", commandA
 analysis_dir <- if (!is.na(script_file)) {
   dirname(normalizePath(script_file))
 } else {
-  file.path(getwd(), "CH4_Drought")
+  # Interactive run: pick whichever candidate holds config.R, so this works whether
+  # the working directory is the project root or the CH4_Drought folder.
+  cand <- c(getwd(), file.path(getwd(), "CH4_Drought"),
+            "/Users/sm3466/Library/CloudStorage/Dropbox-YSE/Sparkle Malone/Research/AI-for-Natural-Methane/CH4_Drought")
+  hit <- cand[file.exists(file.path(cand, "config.R"))]
+  if (length(hit)) hit[1] else stop(
+    "Could not find config.R. setwd() to the CH4_Drought folder (or its parent) and rerun.")
 }
 
 source(file.path(analysis_dir, "config.R"))

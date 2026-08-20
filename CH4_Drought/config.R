@@ -37,6 +37,22 @@ HOT_THRESHOLD   <- 1             # STI >= this  -> hot event
 COLD_THRESHOLD  <- -1            # STI <= this  -> cold event  (between -> normal)
 TEMP_MIN_MONTH_OBS <- 5          # min obs in a site-month to estimate the STI baseline
 
+# --- Site selection: non-target IGBP classes to exclude -------------------------
+# Single source of truth for the land-cover classes dropped from the analysis:
+# CRO = cropland, URB = urban, SNO = snow/ice, WAT = open water (e.g. DE-Dgw lake).
+# Referenced by 05_CompileData.R (FinalDrought table), 06_BuildAnalysisTable.R
+# (canonical DroughtAnalysis table), and 10_Figure_MAP.R (site maps / SiteList) so
+# the three stay consistent. Edit here to add/remove an excluded class everywhere.
+EXCLUDE_IGBP <- c("CRO", "URB", "SNO", "WAT")
+
+# Additional site-level exclusions (by SITE_ID), for towers whose IGBP class is kept
+# but which are upland sites with no wetland in or adjacent to the footprint:
+#   AT-Neu (montane hay meadow), CH-Cha (lowland grassland), CH-Dav (subalpine
+#   conifer forest), FI-Hyy (boreal pine forest; Siikaneva fen is ~5-6 km away).
+# US-Ho1 is retained (scattered wetland patches within the footprint). Applied
+# alongside EXCLUDE_IGBP in 05_CompileData.R, 06_BuildAnalysisTable.R, 10_Figure_MAP.R.
+EXCLUDE_SITES <- c("AT-Neu", "CH-Cha", "CH-Dav", "FI-Hyy")
+
 # --- Server / output locations --------------------------------------------------
 # Canonical outputs are written to the project outputs/ folder AND (when
 # reachable) mirrored to the lab server so downstream scripts and collaborators

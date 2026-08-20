@@ -1,5 +1,6 @@
 # =====================================================================
 # 22_Figures.R
+
 # Manuscript figures (fig1-fig7) for the CH4 x compound extreme-events
 # analysis. Faithful base-R ports of the original matplotlib scripts in
 # outputs/claude/ (figs.py, projection.py, projection2.py, contmap.py,
@@ -77,7 +78,8 @@ TAE  <- file.path(OUTPUTS, "temperature_anomaly_events")   # 07 / 11_Linear / 12
 TE   <- file.path(OUTPUTS, "temperature_events")           # 09
 FMC  <- file.path(OUTPUTS, "fluxnet_model_comparison")     # 15 (feeds fig5)
 EEP  <- file.path(OUTPUTS, "extreme_emissions_projection") # 18
-RP   <- file.path(OUTPUTS, "regional_projection")          # 19
+RP   <- file.path(OUTPUTS, "regional_projection")          # 19 (fixed-area, comparison)
+RPI  <- file.path(OUTPUTS, "regional_projection_inundation") # 19c (variable inundation, headline)
 CL   <- file.path(OUTPUTS, "claude")                       # figure + generated-CSV output
 DATA <- file.path(PROJECT, "data")
 OUT  <- CL
@@ -186,7 +188,7 @@ fig1 <- function() {
     r <- d[d$temp_class == te[i] & d$condition == mo[j], ]
     M[i, j] <- r$normalized_Fch4_mean; N[i, j] <- r$n_obs
   }
-  png_open("fig1_compound_grid.png", 6.6, 5.0)
+  png_open("fig1_compound_grid.png", 5.6, 5.0)
   par(mar = c(4.5, 5, 4, 6), xpd = NA)
   plot(NA, xlim = c(0.5, 3.5), ylim = c(3.5, 0.5), axes = FALSE, xlab = "", ylab = "", asp = 1)
   for (i in 1:3) for (j in 1:3) {
@@ -204,14 +206,13 @@ fig1 <- function() {
   for (j in 1:3) text(j, 3.75, xlab[j], font = 2, col = xcol[j], cex = 0.95)
   for (i in 1:3) text(0.28, i, ylab[i], font = 2, col = ycol[i], srt = 90, cex = 0.95)
   mtext("Moisture anomaly (SPEI)", side = 1, line = 2.2, font = 2)
-  mtext("Temperature anomaly", side = 2, line = 3.2, font = 2)
-  title("Methane flux anomaly across the compound extreme-event space",
-        font.main = 2, cex.main = 1.05, line = 2.2)
+  mtext("Temperature anomaly (STI)", side = 2, line = 3.2, font = 2)
+ # title("Methane anomaly across (nmol m⁻² s⁻¹)", font.main = 2, cex.main = 1.05, line = 2.2)
   vals <- seq(-8, 17, length.out = 100); by <- seq(0.5, 3.5, length.out = 100)
   for (k in 1:99) rect(3.75, by[k], 3.95, by[k + 1], col = ramp_col(vals[k], -8, 0, 17), border = NA)
   rect(3.75, 0.5, 3.95, 3.5, border = "#888888")
   text(4.2, c(0.5, 2, 3.5), sprintf("%+d", c(17, 4, -8)), cex = 0.7)
-  text(4.5, 2, "Mean normalized FCH4 anomaly", srt = 90, cex = 0.75)
+  text(4.5, 2, expression("Mean normalized methane anomaly (nmol " * m^-2 ~ s^-1 * ")"), srt = 90, cex = 0.75)
   dev.off()
 }
 
@@ -229,27 +230,52 @@ fig2 <- function() {
   gss <- function(pat) aov$sumsq[grepl(pat, aov$term)][1]
   ss <- c(gss("^temp_class$"), gss("^condition$"), gss(":"))
 
-  png_open("fig2_marginal_partition.png", 9.2, 4.2)
-  par(mfrow = c(1, 2), mar = c(4, 4.5, 3, 1))
+  # Larger axis annotation sizes (tick numbers, axis titles, category labels,
+  # panel letters, value labels).
+  CEX_AXIS <- 1.35; CEX_NAMES <- 1.4; CEX_LAB <- 1.35; CEX_VAL <- 1.2; CEX_PANEL <- 1.5
+
+  png_open("fig2_marginal_partition.png", 9.6, 4.6)
+  par(mfrow = c(1, 2), mar = c(4.2, 5.2, 3.2, 1.2), mgp = c(3, 0.8, 0))
   cols <- TEMP[c("cold", "normal", "hot")]
-  bp <- barplot(eff, col = cols, border = "#333333", ylim = c(-11, 11),
-                names.arg = c("Cold", "Normal", "Hot"), las = 1)
+  # Data-driven y-limits (was hardcoded c(-11, 11), which clipped whiskers/labels
+  # when the site set changed). Leave headroom for the value labels above the
+  # whiskers and for the p-value note near the top.
+  lab_off <- 1.1
+  ytop <- max(eff + se, na.rm = TRUE); ybot <- min(eff - se, na.rm = TRUE)
+  span <- max(ytop - ybot, 1)
+  ylim_a <- c(min(0, ybot) - 0.14 * span - lab_off,
+              max(0, ytop) + 0.24 * span + lab_off)
+  bp <- barplot(eff, col = cols, border = "#333333", ylim = ylim_a,
+                names.arg = c("Cold", "Normal", "Hot"), las = 1,
+                cex.axis = CEX_AXIS, cex.names = CEX_NAMES)
   abline(h = 0, col = "#999999")
   arrows(bp, eff - se, bp, eff + se, angle = 90, code = 3, length = 0.05, col = "#333333")
   # place labels clear of the error-bar whiskers (beyond eff +/- se)
-  text(bp, eff + ifelse(eff >= 0, se + 1.1, -(se + 1.1)), sprintf("%+.1f", eff), font = 2)
-  mtext("Methane anomaly vs normal", side = 2, line = 2.6, font = 2)
-  title("(a) Temperature-anomaly effect on methane", font.main = 2, cex.main = 1)
-  text(mean(bp), 10.3, "hot vs cold p<0.001", font = 3, cex = 0.8, col = "#555555")
+  text(bp, eff + ifelse(eff >= 0, se + lab_off, -(se + lab_off)), sprintf("%+.1f", eff),
+       font = 2, cex = CEX_VAL)
+  mtext(expression(bold("Methane anomaly (nmol " * m^-2 ~ s^-1 * ")")), side = 2, line = 3.0,
+        font = 2, cex = CEX_LAB)
+  title("(a)", adj = 0, font.main = 2, cex.main = CEX_PANEL)
+  text(mean(bp), ylim_a[2] - 0.04 * diff(ylim_a), "hot vs cold p<0.001",
+       font = 3, cex = 0.95, col = "#555555")
 
-  terms <- c("Temperature\nanomaly", "Moisture\ncondition", "Interaction")
-  par(mar = c(4, 7, 3, 2))
+  terms <- c("Temperature\nanomaly", "Moisture\nanomaly", "Interaction")
+  par(mar = c(4.6, 8, 3.2, 2.4), mgp = c(3, 0.8, 0))
+  # Data-driven x-limit with headroom. Place each value label INSIDE the bar tip
+  # when the bar is long enough, otherwise just outside — so the label on the
+  # longest bar is never clipped by the panel edge (the earlier pos=4 labels ran
+  # off the right side regardless of the fixed xlim).
+  xmax <- max(ss, na.rm = TRUE) * 1.18
   bp2 <- barplot(rev(ss), horiz = TRUE, col = "grey70", border = "#333333",
-                 names.arg = rev(terms), las = 1, xlim = c(0, 1.55e6))
-  text(rev(ss) + 15000, bp2, sprintf("%.0fk", rev(ss) / 1e3), pos = 4, font = 2,
-       cex = 0.9, xpd = NA)
-  mtext("Sum of squares (Type-I)", side = 1, line = 2.4, font = 2)
-  title("(b) Variance partition (all p<0.001)", font.main = 2, cex.main = 1)
+                 names.arg = rev(terms), las = 1, xlim = c(0, xmax),
+                 cex.axis = CEX_AXIS, cex.names = CEX_NAMES)
+  vals <- rev(ss); labs <- sprintf("%.0fk", vals / 1e3)
+  inside <- is.finite(vals) & vals > 0.18 * xmax
+  text(x = ifelse(inside, vals - 0.015 * xmax, vals + 0.015 * xmax),
+       y = bp2, labels = labs, pos = ifelse(inside, 2, 4),
+       font = 2, cex = CEX_VAL, col = "#222222", xpd = NA)
+  mtext("Sum of squares (Type-I)", side = 1, line = 2.8, font = 2, cex = CEX_LAB)
+  title("(b)", adj = 0, font.main = 2, cex.main = CEX_PANEL)
   dev.off()
 }
 
@@ -278,9 +304,9 @@ fig3 <- function() {
   ybot <- yl[1] + 0.04 * diff(yl)   # anchor the band labels to the bottom of the panel
   text(-1.75, ybot, "drier", col = MOIST["drought"], font = 2, cex = 0.9)
   text(1.75, ybot, "wetter", col = MOIST["extreme_wet"], font = 2, cex = 0.9)
-  mtext("SPEI (moisture anomaly)", side = 1, line = 2.5, font = 2)
-  mtext("Methane flux (relative to normal)", side = 2, line = 2.6, font = 2)
-  title("Drought raises methane only when it is hot", font.main = 2, cex.main = 1.1)
+  mtext("Moisture anomaly (SPEI)", side = 1, line = 2.5, font = 2)
+  mtext(expression(bold("Methane anomaly (nmol " * m^-2 ~ s^-1 * ")")), side = 2, line = 2.6, font = 2)
+  title("", font.main = 2, cex.main = 1.1)
   legend("topright", bty = "n", cex = 0.95, lwd = 3, col = TEMP[c("cold", "normal", "hot")],
          legend = sprintf("%s (slope %+.1f)", c("Cold", "Normal", "Hot"),
                           m[c("cold", "normal", "hot")]))
@@ -311,7 +337,7 @@ fig4 <- function() {
   arrows(bp, q10 - qse, bp, q10 + qse, angle = 90, code = 3, length = 0.05, col = "#333333")
   text(bp, q10 + 0.15, sprintf("%.2f", q10), font = 2)
   mtext(expression(bold("Temperature sensitivity Q"[10])), side = 2, line = 2.5)
-  title(expression(bold("(a) Q"[10]*" is stable across anomalies")), cex.main = 1)
+  title("(a)", adj = 0, font.main = 2, cex.main = 1)
 
   par(mar = c(4, 9, 4, 2))
   cols_rf <- ifelse(is_temp, "#b2182b", "#999999"); y <- seq_len(nrow(rf))
@@ -323,7 +349,7 @@ fig4 <- function() {
   for (k in y) axis(2, at = k, labels = lab[k], las = 1, tick = FALSE,
                     col.axis = cols_rf[k], font.axis = ifelse(is_temp[k], 2, 1), cex.axis = 0.8)
   mtext("% increase in MSE", side = 1, line = 2.4, font = 2)
-  title("(b) Random-forest importance\n(temperature in red)", cex.main = 0.95)
+  title("(b)", adj = 0, font.main = 2, cex.main = 0.95)
   dev.off()
 }
 
@@ -373,7 +399,7 @@ fig5 <- function() {
   text(bp, ifelse(means >= 0, -1, 1) * diff(ylim_a) * 0.04, paste0("n = ", n_overlap),
        col = "grey30", cex = 0.85)
   mtext(expression(bold(Delta*" normalized CH"[4]*" under drought")), 2, 3, cex = 0.95)
-  title("(a) Mean drought response", font.main = 2, cex.main = 1.05)
+  title("(a)", adj = 0, font.main = 2, cex.main = 1.05)
   # (b) direction of site-level response (diverging bars)
   par(mar = c(5, 6, 3.5, 1))
   plot(NA, xlim = c(-100, 100), ylim = c(0.5, 2.5), axes = FALSE, xlab = "", ylab = "")
@@ -395,35 +421,61 @@ fig5 <- function() {
   axis(2, at = c(2, 1), labels = c("FLUXNET", MODEL_NAME), las = 1, tick = FALSE)
   mtext("Share of sites (%)", 1, 2.3, cex = 0.9)
   mtext("Lower  <-  |  ->  Higher   (lighter = lower)", 1, 3.5, cex = 0.72)
-  title("(b) Direction of site-level drought response", font.main = 2, cex.main = 1.05)
-  mtext(sprintf("Model-observation sign agreement: %d%% (n = %d overlapping sites)",
-                sign_agree, n_overlap), 3, 0.2, cex = 0.8, col = "grey30")
+  title("(b)", adj = 0, font.main = 2, cex.main = 1.05)
+  #mtext(sprintf("Model-observation sign agreement: %d%% (n = %d overlapping sites)",
+  #              sign_agree, n_overlap), 3, 0.2, cex = 0.8, col = "grey30")
   dev.off()
 }
 
 # ---------------------------------------------------------------------
-# FIG 6: projection - additional CH4 rate & cumulative (illustrative)
+# FIG 6: projected additional wetland CH4 - variable inundation (headline)
+#        vs fixed area (comparison). Source: 19c regional_projection_inundation/
+#        (median + 5-95%) and 19 regional_projection/ (fixed-area median).
+#   (a) additional Tg/yr to 2100 by SSP: variable median + 5-95% band, fixed dashed
+#   (b) additional Tg/yr at 2100 by SSP: variable vs fixed bars (variable 5-95%)
 # ---------------------------------------------------------------------
 fig6 <- function() {
-  p <- rd(EEP, "extreme_emissions_projection.csv")
-  ssps <- intersect(names(SSPCOL), unique(p$ssp))
+  vf <- file.path(RPI, "regional_global_projection_inundation.csv")
+  ff <- file.path(RP,  "regional_global_projection.csv")
+  if (!file.exists(vf)) {
+    message("  (skip fig6: ", basename(vf), " not found; run 19c)"); return(invisible(FALSE)) }
+  pv <- read.csv(vf, stringsAsFactors = FALSE, check.names = FALSE)
+  pf <- if (file.exists(ff)) read.csv(ff, stringsAsFactors = FALSE, check.names = FALSE) else NULL
+  ssps <- intersect(names(SSPCOL), unique(pv$ssp))
   png_open("fig6_projection.png", 10, 4.3)
   par(mfrow = c(1, 2), mar = c(4, 5, 3, 1))
-  plot(NA, xlim = range(p$year), ylim = range(0, p$additional_Tg_per_yr),
-       xlab = "", ylab = "", las = 1)
-  for (s in ssps) { d <- p[p$ssp == s, ]; lines(d$year, d$additional_Tg_per_yr, col = SSPCOL[s], lwd = 2.4) }
+  # (a) rate over time: variable median + 5-95% band; fixed area dashed
+  yhi <- max(pv$hi, 0, na.rm = TRUE)
+  plot(NA, xlim = range(pv$year), ylim = range(0, yhi), xlab = "", ylab = "", las = 1)
+  for (s in ssps) { d <- pv[pv$ssp == s, ]
+    polygon(c(d$year, rev(d$year)), c(d$lo, rev(d$hi)), col = adjustcolor(SSPCOL[s], 0.15), border = NA) }
+  for (s in ssps) { d <- pv[pv$ssp == s, ]
+    lines(d$year, d$additional_Tg_per_yr_median, col = SSPCOL[s], lwd = 2.4) }
+  if (!is.null(pf)) for (s in ssps) { d <- pf[pf$ssp == s, ]
+    lines(d$year, d$additional_Tg_per_yr_median, col = SSPCOL[s], lwd = 1.5, lty = 2) }
   abline(h = 0, col = "#999999")
   mtext("Year", 1, 2.4, font = 2)
   mtext(expression(bold("Additional wetland CH"[4]*" (Tg yr"^-1*")")), 2, 2.8)
-  title("(a) Extra emissions rate vs today", cex.main = 1)
-  legend("topleft", legend = ssps, col = SSPCOL[ssps], lwd = 2.4, bty = "n", cex = 0.85)
-  cum <- sapply(ssps, function(s) p$cumulative_Tg[p$ssp == s & p$year == max(p$year)])
-  par(mar = c(6.5, 5, 3, 1))   # extra bottom room for the vertical SSP labels
-  bp <- barplot(cum, col = SSPCOL[ssps], border = "#333", las = 2, names.arg = ssps,
-                ylim = c(0, max(cum) * 1.12))
-  text(bp, cum + max(cum) * 0.03, sprintf("%.0f", cum), font = 2)
-  mtext(expression(bold("Cumulative extra CH"[4]*" 2020-2100 (Tg)")), 2, 2.8)
-  title("(b) Cumulative additional emissions", cex.main = 1)
+  title("(a)", adj = 0, font.main = 2, cex.main = 1)
+  legend("topleft", legend = ssps, col = SSPCOL[ssps], lwd = 2.4, bty = "n", cex = 0.8)
+  legend("bottomright", legend = c("variable inundation", "fixed area"),
+         lwd = c(2.4, 1.5), lty = c(1, 2), col = "#555555", bty = "n", cex = 0.72)
+  # (b) 2100 additional rate: variable vs fixed grouped bars (variable 5-95% whiskers)
+  yr2100 <- max(pv$year)
+  v2 <- pv[pv$year == yr2100, ]; v2 <- v2[match(ssps, v2$ssp), ]
+  f2 <- if (!is.null(pf)) { z <- pf[pf$year == yr2100, ]; z[match(ssps, z$ssp), ] } else NULL
+  M <- rbind(v2$additional_Tg_per_yr_median,
+             if (!is.null(f2)) f2$additional_Tg_per_yr_median else rep(NA_real_, length(ssps)))
+  colnames(M) <- ssps
+  cols_b <- as.vector(rbind(unname(SSPCOL[ssps]), rep("#cccccc", length(ssps))))
+  par(mar = c(6.5, 5, 3, 1))
+  bp <- barplot(M, beside = TRUE, col = cols_b, border = "#333", las = 2,
+                names.arg = ssps, ylim = c(0, max(v2$hi, M, na.rm = TRUE) * 1.15))
+  arrows(bp[1, ], v2$lo, bp[1, ], v2$hi, angle = 90, code = 3, length = 0.03, col = "#333")
+  mtext(expression(bold("Additional CH"[4]*" at 2100 (Tg yr"^-1*")")), 2, 2.8)
+  title("(b)", adj = 0, font.main = 2, cex.main = 1)
+  legend("topleft", legend = c("variable inundation (SSP color)", "fixed area"),
+         fill = c("#762a83", "#cccccc"), border = "#333", bty = "n", cex = 0.72)
   dev.off()
 }
 
@@ -445,7 +497,7 @@ fig6b <- function(outfile = "fig6b_projection_uncertainty.png") {
   abline(h = 0, col = "#999999")
   mtext("Year", 1, 2.4, font = 2)
   mtext(expression(bold("Additional wetland CH"[4]*" (Tg yr"^-1*")")), 2, 2.8)
-  title("(a) Extra emission rate (5-95% band)", cex.main = 1)
+  title("(a)", adj = 0, font.main = 2, cex.main = 1)
   legend("topleft", legend = ssps, col = SSPCOL[ssps], lwd = 2.4, bty = "n", cex = 0.85)
   r <- p[p$year == max(p$year), ]; r <- r[match(ssps, r$ssp), ]
   cm <- r$cumulative_Tg_median
@@ -457,7 +509,7 @@ fig6b <- function(outfile = "fig6b_projection_uncertainty.png") {
   arrows(bp, clo, bp, chi, angle = 90, code = 3, length = 0.04, col = "#333")
   text(bp, chi + max(chi) * 0.03, sprintf("%.0f", cm), font = 2)
   mtext(expression(bold("Cumulative extra CH"[4]*" 2020-2100 (Tg)")), 2, 2.8)
-  title("(b) Cumulative (5-95%)", cex.main = 1)
+  title("(b)", adj = 0, font.main = 2, cex.main = 1)
   dev.off()
 }
 
@@ -484,8 +536,7 @@ fig7_continent <- function() {
   for (nm in names(labs)) if (nm %in% s$continent)
     text(labs[[nm]][1], labs[[nm]][2], nm, col = "#555", font = 3, cex = 0.8)
   mtext("Longitude", 1, 2.4, font = 2); mtext("Latitude", 2, 2.6, font = 2)
-  title(expression("(a) FLUXNET-CH"[4]*" sites: methane response to heat (hot - cold anomaly)"),
-        cex.main = 1, font.main = 2)
+  title("(a)", adj = 0, cex.main = 1, font.main = 2)
   vv <- seq(-30, 30, length.out = 100); yb <- seq(-50, 40, length.out = 100)
   for (k in 1:99) rect(192, yb[k], 202, yb[k + 1], col = ramp_col(vv[k], -30, 0, 30), border = NA)
   text(210, c(-50, 40), c("-30", "+30"), cex = 0.7)
@@ -498,7 +549,7 @@ fig7_continent <- function() {
   arrows(cs$mean - se, bp, cs$mean + se, bp, angle = 90, code = 3, length = 0.03, col = "#333")
   abline(v = 0, col = "#888")
   mtext(expression("Mean hot - cold normalized FCH"[4]), 1, 2.5, font = 2, cex = 0.9)
-  title("(b) By continent", cex.main = 1, font.main = 2)
+  title("(b)", adj = 0, cex.main = 1, font.main = 2)
   dev.off()
 }
 
@@ -506,7 +557,10 @@ fig7_continent <- function() {
 # FIG 7 (regional): latitude-band map + grouped regional bars by SSP
 # ---------------------------------------------------------------------
 fig7_regional <- function() {
-  rb <- rd(RP, "regional_breakdown_2100.csv")
+  # headline = variable-inundation band breakdown (19c); fixed-area (19) fallback
+  rb_f <- file.path(RPI, "regional_breakdown_2100.csv")
+  if (!file.exists(rb_f)) rb_f <- file.path(RP, "regional_breakdown_2100.csv")
+  rb <- read.csv(rb_f, stringsAsFactors = FALSE, check.names = FALSE)
   share_col <- intersect(c("budget_share", "share"), names(rb))[1]
   sites_f <- file.path(OUT, "site_response_map_data.csv")
   sites <- if (file.exists(sites_f)) rd(sites_f) else NULL
@@ -540,8 +594,7 @@ fig7_regional <- function() {
                  v$additional_Tg_per_yr_2100, v$lo, v$hi))
   }
   mtext("Longitude", 1, 2.4, font = 2); mtext("Latitude", 2, 2.6, font = 2)
-  title(bquote("(a) Region-weighted contribution to global extreme-driven CH"[4]*" by 2100 ("*.(MAP_SSP)*")"),
-        cex.main = 0.95, font.main = 2)
+  title("(a)", adj = 0, cex.main = 0.95, font.main = 2)
   vv <- seq(-2, 2, length.out = 100); yb <- seq(-40, 50, length.out = 100)
   for (k in 1:99) rect(192, yb[k], 202, yb[k + 1], col = ramp_col(vv[k], -2, 0, 2), border = NA)
   text(210, c(-40, 50), c("-2", "+2"), cex = 0.7)
@@ -558,7 +611,7 @@ fig7_regional <- function() {
   text(colMeans(bp), max(M) * 1.15, sprintf("Σ %.1f", colSums(M)), font = 2, cex = 0.8)
   mtext("SSP", 1, 2.4, font = 2)
   mtext(expression(bold("Additional CH"[4]*" by 2100 (Tg yr"^-1*")")), 2, 2.6, cex = 0.9)
-  title("(b) Regional contributions ( Σ = global )", cex.main = 0.95, font.main = 2)
+  title("(b)", adj = 0, cex.main = 0.95, font.main = 2)
   dev.off()
 }
 
@@ -583,9 +636,11 @@ fig7_choropleth <- function() {
             paste(sprintf('\"%s\"', miss), collapse = ", "), ")))")
     return(invisible(FALSE))
   }
-  cc_csv <- file.path(RP, "continent_contributions_2100.csv")
+  # headline = variable-inundation continent contributions (19c); fixed-area (19) fallback
+  cc_csv <- file.path(RPI, "continent_contributions_2100_inundation.csv")
+  if (!file.exists(cc_csv)) cc_csv <- file.path(RP, "continent_contributions_2100.csv")
   if (!file.exists(cc_csv)) {
-    message("  (skip fig7_choropleth: continent_contributions_2100.csv missing)")
+    message("  (skip fig7_choropleth: continent contributions CSV missing; run 19c or 19)")
     return(invisible(FALSE))
   }
   suppressPackageStartupMessages({ library(sf); library(ggplot2) })
@@ -610,8 +665,8 @@ fig7_choropleth <- function() {
                          limits = c(-lim, lim), na.value = "grey92",
                          name = expression(atop("Additional CH"[4], "(Tg yr"^-1*", 2100)"))) +
     coord_sf(crs = "ESRI:54030", expand = FALSE) +   # Robinson, full extent (no y-clip)
-    labs(title = bquote("Continental contribution to global extreme-driven CH"[4]*" by 2100 ("*.(MAP_SSP)*")"),
-         subtitle = "Region-weighted; continents sum to the global total (WAD2M allocation)") +
+   # labs(title = bquote("Continental contribution to global extreme-driven CH"[4]*" by 2100 ("*.(MAP_SSP)*")"),
+   #      subtitle = "Region-weighted; continents sum to the global total (WAD2M allocation)") +
     theme_minimal(base_size = 12) +
     theme(panel.grid = element_line(color = "grey90", linewidth = 0.2),
           axis.text = element_blank(), axis.title = element_blank(), legend.position = "right")
@@ -707,7 +762,7 @@ fig8 <- function() {
   xx <- as.numeric(bp)
   lines(xx, predict(fa, data.frame(year = yr)), col = "#b2182b", lwd = 2.5)
   mtext("Hot-dry state (% of site-days)", 2, 3, font = 2, cex = 0.95)
-  title("(a) Compound hot-dry frequency, 2006-2019", font.main = 2, cex.main = 1)
+  title("(a)", adj = 0, font.main = 2, cex.main = 1)
   legend("topleft", bty = "n", cex = 0.85, text.col = "#b2182b",
          legend = bquote("trend " * .(sprintf("%+.2f", coef(fa)[2])) * " pp yr"^-1))
   # (b)
@@ -716,7 +771,7 @@ fig8 <- function() {
   points(yr, mSTI, pch = 19, col = "#c0392b", cex = 1.1); lines(yr, mSTI, col = "#c0392b", lwd = 1.5)
   lines(yr, predict(fb, data.frame(year = yr)), col = "#333333", lwd = 2.5)
   mtext("Year", 1, 2.4, font = 2); mtext("Mean STI (temperature anomaly), z", 2, 2.8, font = 2, cex = 0.95)
-  title("(b) Mean temperature anomaly, 2006-2019", font.main = 2, cex.main = 1)
+  title("(b)", adj = 0, font.main = 2, cex.main = 1)
   legend("topright", bty = "n", cex = 0.85, text.col = "#333333",
          legend = bquote("trend " * .(sprintf("%+.3f", coef(fb)[2])) * " z yr"^-1))
   dev.off()
@@ -769,13 +824,13 @@ fig9 <- function() {
        xlab = "", ylab = "", las = 1)
   for (s in ssps) { z <- fut[fut$ssp == s, ]; lines(z$year, z$hot_dry_pct, col = SSPCOL[s], lwd = 2.4) }
   mtext("Year", 1, 2.4, font = 2); mtext("Hot-dry state (% of site-time)", 2, 3, font = 2, cex = 0.95)
-  title("(a) Projected compound hot-dry frequency", font.main = 2, cex.main = 1)
+  title("(a)", adj = 0, font.main = 2, cex.main = 1)
   legend("topleft", legend = ssps, col = SSPCOL[ssps], lwd = 2.4, bty = "n", cex = 0.85)
   plot(NA, xlim = range(fut$year), ylim = c(0, max(fut$mean_STI) * 1.05),
        xlab = "", ylab = "", las = 1)
   for (s in ssps) { z <- fut[fut$ssp == s, ]; lines(z$year, z$mean_STI, col = SSPCOL[s], lwd = 2.4) }
   mtext("Year", 1, 2.4, font = 2); mtext("Mean STI (temperature anomaly, z)", 2, 2.8, font = 2, cex = 0.95)
-  title("(b) Projected temperature anomaly", font.main = 2, cex.main = 1)
+  title("(b)", adj = 0, font.main = 2, cex.main = 1)
   legend("topleft", legend = ssps, col = SSPCOL[ssps], lwd = 2.4, bty = "n", cex = 0.85)
   dev.off()
 }
