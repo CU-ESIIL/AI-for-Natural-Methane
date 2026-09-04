@@ -105,6 +105,7 @@ STEP_DOC <- c(
   "20_ContinentChoropleth.R"      = "continent choropleth from region-weighted contributions",
   "21_SensitivityAndDiagnostics.R" = "projection sensitivities and diagnostic flags",
   "21b_AxisOrthogonality.R"        = "SPEI vs STI axis (non-)orthogonality: corr, Cramer's V, joint vs independence, VIF",
+  "21d_DurationSensitivity.R"      = "projection sensitivity to drought duration (SPEI1 vs SPEI48 response)",
   "22_Figures.R"                   = "rebuild manuscript figures from outputs")
 
 PIPELINE <- list(
@@ -123,7 +124,8 @@ PIPELINE <- list(
                "17_ScenarioFrequencies_CMIP6.R", "18_ExtremeEmissionsProjection.R",
                "19_RegionalProjection.R", "19c_RegionalProjection_InundationVarying.R",
                "20_ContinentChoropleth.R",
-               "21_SensitivityAndDiagnostics.R", "21b_AxisOrthogonality.R"),
+               "21_SensitivityAndDiagnostics.R", "21b_AxisOrthogonality.R",
+               "21d_DurationSensitivity.R"),
   regional = c("19_RegionalProjection.R", "19c_RegionalProjection_InundationVarying.R",
                "20_ContinentChoropleth.R",
                "21_SensitivityAndDiagnostics.R"))

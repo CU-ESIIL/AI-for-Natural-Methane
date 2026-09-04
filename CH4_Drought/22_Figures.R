@@ -211,7 +211,9 @@ fig1 <- function() {
   vals <- seq(-8, 17, length.out = 100); by <- seq(0.5, 3.5, length.out = 100)
   for (k in 1:99) rect(3.75, by[k], 3.95, by[k + 1], col = ramp_col(vals[k], -8, 0, 17), border = NA)
   rect(3.75, 0.5, 3.95, 3.5, border = "#888888")
-  text(4.2, c(0.5, 2, 3.5), sprintf("%+d", c(17, 4, -8)), cex = 0.7)
+  # y runs 0.5 (bottom) -> 3.5 (top); the colorbar is drawn -8 (bottom) -> +17 (top),
+  # so labels must ascend to match (previously reversed, which flipped the legend).
+  text(4.2, c(0.5, 2, 3.5), sprintf("%+d", c(-8, 4, 17)), cex = 0.7)
   text(4.5, 2, expression("Mean normalized methane anomaly (nmol " * m^-2 ~ s^-1 * ")"), srt = 90, cex = 0.75)
   dev.off()
 }
@@ -315,8 +317,17 @@ fig3 <- function() {
 
 # ---------------------------------------------------------------------
 # FIG 4: (a) Q10 stability  (b) random-forest importance
+#        (c) drought response vs SPEI accumulation window (duration)
+#        (d) duration x temperature (short vs multi-year drought by temp class)
+# Q10 (a) and duration x temperature (d) bars use the temperature palette (cold
+# blue, normal grey, hot red); panel titles omitted (only the (a)-(d) letters).
+# Panels (c)-(d) use script-14's drought deltas and,
+# for the temperature stratification, the multi-window SPEI in data/fluxes_drought.csv
+# restricted to the canonical analysis sites (data/DroughtAnalysis.RDATA).
 # ---------------------------------------------------------------------
 fig4 <- function() {
+  BAR <- "grey85"; FSL <- file.path(OUTPUTS, "fluxnet_short_long_drought")
+
   q <- rd(TAE, "q10_by_temp_anomaly.csv")
   q <- q[match(c("cold", "normal", "hot"), q$temp_class), ]
   q10 <- q$Q10_mean; qse <- q$Q10_sd / sqrt(q$n_obs)
@@ -330,26 +341,124 @@ fig4 <- function() {
   lab <- rf[[lab_col]]
   lab <- sub(" \\(winter-summer\\)", "", lab); lab <- sub(" \\(hot-cold\\)", "", lab)
 
-  png_open("fig4_q10_rf.png", 9.4, 4.3)
-  par(mfrow = c(1, 2), mar = c(4, 4.5, 4, 1))
-  bp <- barplot(q10, col = TEMP[c("cold", "normal", "hot")], border = "#333333",
-                ylim = c(0, 3.8), names.arg = c("Cold", "Normal", "Hot"), las = 1)
-  arrows(bp, q10 - qse, bp, q10 + qse, angle = 90, code = 3, length = 0.05, col = "#333333")
-  text(bp, q10 + 0.15, sprintf("%.2f", q10), font = 2)
-  mtext(expression(bold("Temperature sensitivity Q"[10])), side = 2, line = 2.5)
-  title("(a)", adj = 0, font.main = 2, cex.main = 1)
+  # canonical analysis site set (43 sites) from the shared table
+  keep <- NULL
+  da <- file.path(DATA, "DroughtAnalysis.RDATA")
+  if (file.exists(da)) { e <- new.env(); load(da, envir = e)
+    if (!is.null(e$fluxes.drought_normalized))
+      keep <- unique(as.character(e$fluxes.drought_normalized$SITE_ID)) }
 
-  par(mar = c(4, 9, 4, 2))
-  cols_rf <- ifelse(is_temp, "#b2182b", "#999999"); y <- seq_len(nrow(rf))
+  # (c) drought delta by SPEI accumulation window (script 14)
+  cwin <- NULL
+  fslf <- file.path(FSL, "site_month_matched_condition_deltas_by_spei_window.csv")
+  if (file.exists(fslf)) {
+    dw <- rd(FSL, "site_month_matched_condition_deltas_by_spei_window.csv")
+    dw <- dw[dw$condition == "drought", ]
+    if (!is.null(keep)) dw <- dw[dw$SITE_ID %in% keep, ]
+    WINv <- c(SPEI1 = 1, SPEI3 = 3, SPEI6 = 6, SPEI12 = 12, SPEI24 = 24, SPEI36 = 36, SPEI48 = 48)
+    cwin <- do.call(rbind, lapply(names(WINv), function(w) {
+      v <- dw$delta_normalized_Fch4[dw$Drought.IDX == w]; v <- v[is.finite(v)]
+      data.frame(mo = WINv[[w]], mean = mean(v), se = stats::sd(v) / sqrt(length(v))) }))
+  }
+
+  # (d) duration x temperature: drought - near-normal delta of normalized CH4 by
+  # temp class at a short (SPEI1) vs multi-year (SPEI48) accumulation window.
+  dt <- NULL
+  fdf <- file.path(DATA, "fluxes_drought.csv")
+  if (file.exists(fdf)) {
+    fd <- rd(DATA, "fluxes_drought.csv")
+    if (!is.null(keep)) fd <- fd[fd$SITE_ID %in% keep, ]
+    fd <- fd[is.finite(fd$FCH4_F_ANNOPTLM) & is.finite(fd$TA_F), ]
+    nn <- fd[is.finite(fd$SPEI1) & fd$SPEI1 > -0.5 & fd$SPEI1 < 0.5, ]
+    fnorm <- tapply(nn$FCH4_F_ANNOPTLM, nn$SITE_ID, mean, na.rm = TRUE)
+    fd <- fd[fd$SITE_ID %in% names(fnorm), ]
+    fd$norm <- fd$FCH4_F_ANNOPTLM - fnorm[fd$SITE_ID]
+    key <- paste(fd$SITE_ID, fd$month, sep = "@@")
+    mu <- tapply(fd$TA_F, key, mean, na.rm = TRUE); sdv <- tapply(fd$TA_F, key, stats::sd, na.rm = TRUE)
+    nk <- tapply(fd$TA_F, key, function(x) sum(is.finite(x)))
+    okv <- is.finite(sdv[key]) & sdv[key] > 0 & nk[key] >= 5
+    sti <- ifelse(okv, (fd$TA_F - mu[key]) / sdv[key], NA)
+    fd$tc <- ifelse(is.na(sti), NA, ifelse(sti <= -1, "cold", ifelse(sti >= 1, "hot", "normal")))
+    delta_by <- function(w, tc) {
+      sub <- fd[!is.na(fd$tc) & fd$tc == tc, ]
+      dr <- sub[is.finite(sub[[w]]) & sub[[w]] <= -1, ]
+      nm <- sub[is.finite(sub$SPEI1) & sub$SPEI1 > -0.5 & sub$SPEI1 < 0.5, ]
+      drm <- tapply(dr$norm, dr$SITE_ID, mean, na.rm = TRUE)
+      nmm <- tapply(nm$norm, nm$SITE_ID, mean, na.rm = TRUE)
+      cm <- intersect(names(drm)[is.finite(drm)], names(nmm)[is.finite(nmm)])
+      d <- drm[cm] - nmm[cm]; c(mean = mean(d), se = stats::sd(d) / sqrt(length(d))) }
+    tcs <- c("cold", "normal", "hot")
+    dt <- list(short = sapply(tcs, function(t) delta_by("SPEI1", t)),
+               long  = sapply(tcs, function(t) delta_by("SPEI48", t)))
+  }
+
+  CEXA <- 1.05; CEXL <- 1.1; CEXP <- 1.4; CEXV <- 1.0
+  png_open("fig4_q10_rf.png", 10, 8.4)
+  par(mfrow = c(2, 2))
+
+  # (a) Q10 stability (light grey bars, labels above)
+  par(mar = c(3.6, 5, 3, 1), mgp = c(3, 0.7, 0))
+  bp <- barplot(q10, col = TEMP[c("cold", "normal", "hot")], border = "#333333",
+                ylim = c(0, max(q10 + qse) * 1.18),
+                names.arg = c("Cold", "Normal", "Hot"), las = 1, cex.axis = CEXA, cex.names = CEXA)
+  arrows(bp, q10 - qse, bp, q10 + qse, angle = 90, code = 3, length = 0.05, col = "#333333")
+  text(bp, q10 + qse + 0.12, sprintf("%.2f", q10), font = 2, cex = CEXV)
+  mtext(expression(bold("Temperature sensitivity Q"[10])), side = 2, line = 3, cex = CEXL)
+  title("(a)", adj = 0, font.main = 2, cex.main = CEXP)
+
+  # (b) random-forest importance
+  par(mar = c(4, 9.5, 3, 1.5), mgp = c(3, 0.7, 0))
+  cols_rf <- ifelse(is_temp, "#b2182b", "grey55"); y <- seq_len(nrow(rf))
   plot(NA, xlim = c(0, max(rf[[imp_col]]) * 1.05), ylim = c(0.5, length(y) + 0.5),
        axes = FALSE, xlab = "", ylab = "")
-  segments(0, y, rf[[imp_col]], y, col = cols_rf, lwd = 2)
-  points(rf[[imp_col]], y, pch = 19, col = cols_rf, cex = 1.1)
-  axis(1)
+  segments(0, y, rf[[imp_col]], y, col = cols_rf, lwd = 2.5)
+  points(rf[[imp_col]], y, pch = 19, col = cols_rf, cex = 1.15)
+  axis(1, cex.axis = CEXA)
   for (k in y) axis(2, at = k, labels = lab[k], las = 1, tick = FALSE,
-                    col.axis = cols_rf[k], font.axis = ifelse(is_temp[k], 2, 1), cex.axis = 0.8)
-  mtext("% increase in MSE", side = 1, line = 2.4, font = 2)
-  title("(b)", adj = 0, font.main = 2, cex.main = 0.95)
+                    col.axis = cols_rf[k], font.axis = ifelse(is_temp[k], 2, 1), cex.axis = 0.85)
+  mtext("% increase in MSE", side = 1, line = 2.4, font = 2, cex = CEXL)
+  title("(b)", adj = 0, font.main = 2, cex.main = CEXP)
+
+  # (c) response vs duration
+  par(mar = c(4.2, 5, 3, 1), mgp = c(3, 0.7, 0))
+  if (!is.null(cwin)) {
+    x <- log2(cwin$mo); ylc <- range(c(cwin$mean - cwin$se, cwin$mean + cwin$se)) * 1.15
+    plot(NA, xlim = c(min(x) - 0.15, max(x) + 0.35), ylim = ylc, axes = FALSE, xlab = "", ylab = "")
+    abline(h = 0, col = "#888888")
+    arrows(x, cwin$mean - cwin$se, x, cwin$mean + cwin$se, angle = 90, code = 3, length = 0.04, col = "#333333")
+    lines(x, cwin$mean, col = "#333333", lwd = 2)
+    # match Fig 1 emission colors: high/positive = blue, low/negative = brown
+    points(x, cwin$mean, pch = 21, bg = ifelse(cwin$mean >= 0, "#2166ac", "#8c510a"), col = "#333333", cex = 1.5)
+    axis(1, at = x, labels = cwin$mo, cex.axis = CEXA); axis(2, las = 1, cex.axis = CEXA)
+    mtext("SPEI accumulation window (months)", side = 1, line = 2.4, font = 2, cex = CEXL)
+    mtext(expression(bold("Drought " * Delta * "CH"[4] * " (nmol m"^-2 * " s"^-1 * ")")), side = 2, line = 3, cex = CEXL)
+  } else { plot.new(); text(0.5, 0.5, "duration data unavailable\n(run 14_FLUXNET_ShortLongDrought.R)", cex = 0.9) }
+  title("(c)", adj = 0, font.main = 2, cex.main = CEXP)
+
+  # (d) duration x temperature
+  par(mar = c(3.6, 5, 3, 1), mgp = c(3, 0.7, 0))
+  if (!is.null(dt)) {
+    sm <- dt$short["mean", ]; se_s <- dt$short["se", ]; lm_ <- dt$long["mean", ]; se_l <- dt$long["se", ]
+    yld <- range(c(sm - se_s, lm_ - se_l, sm + se_s, lm_ + se_l)) * 1.15
+    M <- rbind(sm, lm_)
+    # colour bars by temperature class (cold blue, normal grey, hot red); short =
+    # solid, multi-year = lighter fill + hatch in the same colour.
+    solid <- TEMP[c("cold", "normal", "hot")]
+    light <- sapply(solid, function(h) grDevices::adjustcolor(h, 0.45))
+    barcols <- as.vector(rbind(solid, light))              # cold(s,l), normal(s,l), hot(s,l)
+    bp2 <- barplot(M, beside = TRUE, col = barcols, border = "#333333", names.arg = c("Cold", "Normal", "Hot"),
+                   las = 1, ylim = yld, cex.axis = CEXA, cex.names = CEXA)
+    barplot(rbind(rep(NA, 3), lm_), beside = TRUE, col = as.vector(rbind(rep(NA, 3), solid)),
+            density = 18, angle = 45, border = NA, add = TRUE, axes = FALSE, names.arg = rep("", 3))
+    abline(h = 0, col = "#888888")
+    arrows(bp2[1, ], sm - se_s, bp2[1, ], sm + se_s, angle = 90, code = 3, length = 0.04, col = "#333333")
+    arrows(bp2[2, ], lm_ - se_l, bp2[2, ], lm_ + se_l, angle = 90, code = 3, length = 0.04, col = "#333333")
+    mtext(expression(bold("Drought " * Delta * "CH"[4] * " (nmol m"^-2 * " s"^-1 * ")")), side = 2, line = 3, cex = CEXL)
+    mtext("Temperature anomaly class", side = 1, line = 2.4, font = 2, cex = CEXL)
+    legend("bottomleft", c("Short (1 mo)", "Multi-year (48 mo)"), fill = c("grey55", grDevices::adjustcolor("grey55", 0.45)),
+           density = c(NA, 18), angle = 45, border = "#333333", bty = "n", cex = 0.85)
+  } else { plot.new(); text(0.5, 0.5, "duration x temperature data unavailable\n(needs data/fluxes_drought.csv)", cex = 0.9) }
+  title("(d)", adj = 0, font.main = 2, cex.main = CEXP)
   dev.off()
 }
 
@@ -375,19 +484,28 @@ fig5 <- function() {
     message("  (skip fig5: ", basename(f), " not found; run 15_Compare_FLUXNET_Models.R)")
     return(invisible(FALSE))
   }
-  d <- rd(f)
-  d <- d[d$Drought.IDX == SPEI_WINDOW & d$condition == "drought" & !is.na(d$delta_response), ]
+  dall <- rd(f)
+  d <- dall[dall$Drought.IDX == SPEI_WINDOW & dall$condition == "drought" & !is.na(dall$delta_response), ]
   obs <- d[d$source == "FLUXNET", c("SITE_ID", "delta_response")]
   mod <- d[d$source == MODEL_NAME & d$scenario == MODEL_SCENARIO, c("SITE_ID", "delta_response")]
   names(obs)[2] <- "obs"; names(mod)[2] <- "mod"
   paired <- merge(obs, mod, by = "SITE_ID")            # overlapping sites only
   n_overlap <- length(unique(paired$SITE_ID))          # accurate count of overlapping sites
   sign_agree <- round(100 * mean(sign(paired$obs) == sign(paired$mod)))
-  col_obs <- "#2C3E50"; col_model <- "grey"
+  col_obs <- "#2C3E50"; col_model <- "grey"; col_modln <- "grey55"
   means <- c(mean(paired$obs), mean(paired$mod))
 
-  png_open("fig5_tem_eval.png", 11, 5)
-  layout(matrix(c(1, 2), 1, 2), widths = c(1, 1.25))
+  # (c) obs-vs-model drought response by SPEI accumulation window (duration)
+  WINc <- c(SPEI1 = 1, SPEI3 = 3, SPEI6 = 6, SPEI12 = 12, SPEI24 = 24, SPEI36 = 36, SPEI48 = 48)
+  ser <- function(src, scen) do.call(rbind, lapply(names(WINc), function(w) {
+    v <- dall$delta_response[dall$Drought.IDX == w & dall$condition == "drought" &
+                             dall$source == src & (is.na(scen) | dall$scenario == scen)]
+    v <- v[is.finite(v)]
+    data.frame(mo = WINc[[w]], mean = mean(v), se = stats::sd(v) / sqrt(length(v))) }))
+  so <- ser("FLUXNET", NA); smo <- ser(MODEL_NAME, MODEL_SCENARIO)
+
+  png_open("fig5_tem_eval.png", 11, 9)
+  layout(matrix(c(1, 2, 3, 3), 2, 2, byrow = TRUE), widths = c(1, 1.25), heights = c(1, 1))
   # (a) mean drought response
   par(mar = c(3.5, 5, 3.5, 1))
   ylim_a <- max(abs(means)) * 1.35 * c(-1, 1)
@@ -424,6 +542,25 @@ fig5 <- function() {
   title("(b)", adj = 0, font.main = 2, cex.main = 1.05)
   #mtext(sprintf("Model-observation sign agreement: %d%% (n = %d overlapping sites)",
   #              sign_agree, n_overlap), 3, 0.2, cex = 0.8, col = "grey30")
+
+  # (c) drought response vs duration: FLUXNET vs model at each SPEI window
+  par(mar = c(4.2, 5, 3.5, 1), mgp = c(3, 0.7, 0))
+  x <- log2(WINc)
+  yl <- range(c(so$mean - so$se, so$mean + so$se, smo$mean - smo$se, smo$mean + smo$se), na.rm = TRUE)
+  plot(NA, xlim = c(min(x) - 0.15, max(x) + 0.2), ylim = yl, axes = FALSE, xlab = "", ylab = "")
+  abline(h = 0, lty = 2, col = "grey55")
+  arrows(x, smo$mean - smo$se, x, smo$mean + smo$se, angle = 90, code = 3, length = 0.04, col = col_modln)
+  lines(x, smo$mean, col = col_modln, lwd = 2.5)
+  points(x, smo$mean, pch = 22, bg = col_model, col = "#333333", cex = 1.5)
+  arrows(x, so$mean - so$se, x, so$mean + so$se, angle = 90, code = 3, length = 0.04, col = col_obs)
+  lines(x, so$mean, col = col_obs, lwd = 2.5)
+  points(x, so$mean, pch = 21, bg = col_obs, col = "#333333", cex = 1.5)
+  axis(1, at = x, labels = WINc); axis(2, las = 1)
+  mtext("SPEI accumulation window (months)", 1, 2.5, font = 2, cex = 0.95)
+  mtext(expression(bold(Delta*" normalized CH"[4]*" under drought")), 2, 3, cex = 0.95)
+  legend("bottomleft", c("FLUXNET", MODEL_NAME), lwd = 2.5, pch = c(21, 22),
+         col = c(col_obs, col_modln), pt.bg = c(col_obs, col_model), pt.cex = 1.3, bty = "n", cex = 0.95)
+  title("(c)", adj = 0, font.main = 2, cex.main = 1.05)
   dev.off()
 }
 
@@ -629,7 +766,7 @@ fig7_choropleth <- function() {
   # Natural Earth's Admin-0 countries via rnaturalearth and dissolve by
   # continent. This is the maintained, artifact-free source and includes
   # Australia. Needs sf + ggplot2 + rnaturalearth (+ rnaturalearthdata).
-  need <- c("sf", "ggplot2", "rnaturalearth", "rnaturalearthdata")
+  need <- c("sf", "rnaturalearth", "rnaturalearthdata")
   miss <- need[!vapply(need, requireNamespace, logical(1), quietly = TRUE)]
   if (length(miss)) {
     message("  (skip fig7_choropleth: install.packages(c(",
@@ -643,34 +780,112 @@ fig7_choropleth <- function() {
     message("  (skip fig7_choropleth: continent contributions CSV missing; run 19c or 19)")
     return(invisible(FALSE))
   }
-  suppressPackageStartupMessages({ library(sf); library(ggplot2) })
+  suppressPackageStartupMessages(library(sf))
   sf::sf_use_s2(FALSE)
   MAP_SSP <- "SSP2-4.5"
   bd <- read.csv(cc_csv, stringsAsFactors = FALSE); bd <- bd[bd$ssp == MAP_SSP, ]
+
+  # sustained-drought (SPEI48) contributions: anchor the published short-drought
+  # continent map (MC median) to the sustained arm via the per-continent short/long
+  # ratio computed deterministically in 21d. If 21d has not been run, falls back
+  # to a single short-drought map.
+  dur_csv <- file.path(OUTPUTS, "diagnostics", "duration_continent_contributions.csv")
+  have_long <- file.exists(dur_csv)
+  bd$short_val <- bd$additional_Tg_per_yr_2100
+  if (have_long) {
+    dd <- read.csv(dur_csv, stringsAsFactors = FALSE); dd <- dd[dd$ssp == MAP_SSP, ]
+    m <- merge(bd[, c("continent", "short_val")], dd, by = "continent", all.x = TRUE)
+    m$ratio <- ifelse(abs(m$short_Tg_2100) > 1e-9, m$long_Tg_2100 / m$short_Tg_2100, NA)
+    m$long_val <- m$short_val * m$ratio
+    bd <- merge(bd, m[, c("continent", "long_val")], by = "continent", all.x = TRUE)
+  }
 
   world <- rnaturalearth::ne_countries(scale = 110, returnclass = "sf")  # offline via rnaturalearthdata
   world <- world[!is.na(world$continent) &
                  !world$continent %in% c("Antarctica", "Seven seas (open ocean)"), ]
   world <- st_make_valid(world)
+  # Natural Earth's `continent` field labels the Russian Federation "Asia"; force
+  # the whole country into Europe so the map matches the Russia = Europe convention
+  # used in the WAD2M continent x band allocation.
+  nm <- if ("admin" %in% names(world)) world$admin
+        else if ("sovereignt" %in% names(world)) world$sovereignt else world$name
+  world$continent[!is.na(nm) & nm %in% c("Russia", "Russian Federation")] <- "Europe"
   # dissolve countries -> one polygon per continent (base R; no dplyr needed)
   cs <- sort(unique(world$continent))
   geoms <- do.call(c, lapply(cs, function(k) st_union(st_geometry(world[world$continent == k, ]))))
   cont <- st_sf(continent = cs, geometry = geoms, crs = st_crs(world))
-  cont <- merge(cont, bd[, c("continent", "additional_Tg_per_yr_2100")], by = "continent", all.x = TRUE)
+  cont <- st_transform(cont, "ESRI:54030")   # Robinson
 
-  lim <- max(abs(bd$additional_Tg_per_yr_2100), na.rm = TRUE)
-  p <- ggplot(cont) +
-    geom_sf(aes(fill = additional_Tg_per_yr_2100), color = "grey30", linewidth = 0.15) +
-    scale_fill_gradient2(low = "#8c510a", mid = "#f7f7f7", high = "#2166ac", midpoint = 0,
-                         limits = c(-lim, lim), na.value = "grey92",
-                         name = expression(atop("Additional CH"[4], "(Tg yr"^-1*", 2100)"))) +
-    coord_sf(crs = "ESRI:54030", expand = FALSE) +   # Robinson, full extent (no y-clip)
-   # labs(title = bquote("Continental contribution to global extreme-driven CH"[4]*" by 2100 ("*.(MAP_SSP)*")"),
-   #      subtitle = "Region-weighted; continents sum to the global total (WAD2M allocation)") +
-    theme_minimal(base_size = 12) +
-    theme(panel.grid = element_line(color = "grey90", linewidth = 0.2),
-          axis.text = element_blank(), axis.title = element_blank(), legend.position = "right")
-  ggsave(file.path(OUT, "fig7_continent_choropleth.png"), p, width = 9, height = 4.8, dpi = 300)
+  # diverging value -> colour ramp, shared by BOTH maps and the bar chart so the
+  # bar fills follow the map legend. Duration (short vs sustained) is encoded by a
+  # hatch overlay on the sustained bars, NOT by colour.
+  ramp <- grDevices::colorRampPalette(c("#8c510a", "#f7f7f7", "#2166ac"))(256)
+  lim  <- max(abs(c(bd$short_val, if (have_long) bd$long_val)), na.rm = TRUE)
+  col_for <- function(v) { i <- round((v + lim) / (2 * lim) * 255) + 1
+    i[i < 1] <- 1; i[i > 256] <- 256; out <- ramp[i]; out[is.na(v)] <- "grey92"; out }
+  vs <- setNames(bd$short_val, bd$continent)[cont$continent]
+  vl <- if (have_long) setNames(bd$long_val, bd$continent)[cont$continent] else NULL
+
+  # panel letter, pinned to a fixed device column (ndc x) so (a)/(b)/(c) align
+  # vertically regardless of each panel's margins.
+  plab <- function(lab) {
+    x <- grconvertX(0.015, "ndc", "user"); y <- grconvertY(0.97, "npc", "user")
+    text(x, y, lab, font = 2, cex = 1.3, adj = c(0, 1), xpd = NA)
+  }
+  # shared horizontal colour bar across the top (one legend for both maps + bars)
+  draw_hcbar <- function() {
+    par(mar = c(2.6, 7, 2.4, 7))
+    plot.new(); plot.window(xlim = c(-lim, lim), ylim = c(0, 1), xaxs = "i")
+    n <- length(ramp); xs <- seq(-lim, lim, length.out = n + 1)
+    rect(xs[-(n + 1)], 0, xs[-1], 1, col = ramp, border = NA)
+    rect(-lim, 0, lim, 1, border = "grey40")
+    at <- pretty(c(-lim, lim), 5); at <- at[abs(at) <= lim]
+    axis(1, at = at, labels = sprintf("%+.1f", at), cex.axis = 0.9, tck = -0.28, mgp = c(2, 0.55, 0))
+    mtext(expression("Additional wetland CH"[4] * " in 2100 (Tg yr"^-1 * ")"),
+          side = 3, line = 0.3, cex = 0.95)
+  }
+  draw_map <- function(vals, tag) {
+    par(mar = c(0.5, 0.5, 1.0, 0.5))
+    plot(st_geometry(cont), col = col_for(vals), border = "grey30", lwd = 0.5)
+    plab(tag)
+  }
+
+  if (!have_long) {
+    message("  (fig7_choropleth: 21d duration CSV not found; drawing short-drought map only)")
+    png(file.path(OUT, "fig7_continent_choropleth.png"), width = 1700, height = 1080, res = 200)
+    layout(matrix(1:2, 2, 1), heights = c(0.30, 1))
+    draw_hcbar(); draw_map(vs, "")
+    dev.off(); return(invisible(TRUE))
+  }
+
+  png(file.path(OUT, "fig7_continent_choropleth.png"), width = 1700, height = 2350, res = 210)
+  layout(matrix(1:4, 4, 1), heights = c(0.32, 1, 1, 1.2))
+  draw_hcbar()
+  draw_map(vs, "(a)")
+  draw_map(vl, "(b)")
+
+  # (c) per-continent bars: fill colour follows the shared legend (value -> ramp);
+  #     short vs sustained shown by a hatch overlay on the sustained bar.
+  par(mar = c(4.6, 8.7, 2.4, 1.5))
+  o <- order(bd$short_val); mb <- bd[o, ]
+  M  <- rbind(short = mb$short_val, long = mb$long_val)
+  colmat <- as.vector(rbind(col_for(mb$short_val), col_for(mb$long_val)))
+  bp <- barplot(M, beside = TRUE, horiz = TRUE, names.arg = mb$continent, las = 1,
+                col = colmat, border = "grey20", xlim = c(-lim * 1.2, lim * 1.2),
+                xlab = expression("Additional CH"[4] * " 2100 (Tg yr"^-1 * ")"))
+  Mh <- M; Mh["short", ] <- NA                       # hatch overlay on sustained bars only
+  barplot(Mh, beside = TRUE, horiz = TRUE, col = "grey20", density = 17, angle = 45,
+          add = TRUE, axes = FALSE, names.arg = rep("", ncol(M)))
+  abline(v = 0, col = "grey50")
+  vv <- as.vector(M)
+  text(vv, as.vector(bp), sprintf("%.2f", vv),
+       pos = ifelse(vv >= 0, 4, 2), cex = 0.72, xpd = NA)
+  legend("topleft", c("Short-term drought (SPEI1)", "Sustained drought (SPEI48)"),
+         fill = "grey85", density = c(NA, 17), angle = 45, border = "grey20", bty = "n",
+         cex = 1.3, y.intersp = 1.2)
+  plab("(c)")
+  dev.off()
+  invisible(TRUE)
 }
 
 # ---------------------------------------------------------------------
@@ -836,6 +1051,82 @@ fig9 <- function() {
 }
 
 # ---------------------------------------------------------------------
+# FIG (headline SI): variable-inundation projection with SHORT (SPEI1) vs
+# SUSTAINED (SPEI48) drought in EVERY panel. This overwrites the 19c figure at
+# outputs/regional_projection_inundation/figures/inundation_varying_projection.png
+# so the manuscript figure always carries the duration sensitivity. Because
+# 22_Figures.R runs last, this is the authoritative writer of that PNG (19c may
+# also write a short-only version earlier; it is superseded here). Source CSVs
+# come from 21d_DurationSensitivity.R:
+#   outputs/diagnostics/duration_sensitivity_trajectories.csv  (panels a, c)
+#   outputs/diagnostics/duration_area_factor.csv               (panel b)
+# Skips cleanly if 21d has not been run.
+#   (a) additional-emission rate: solid = short (SPEI1) + published 5-95% band,
+#       dashed = sustained (SPEI48); one color per SSP.
+#   (b) inundation area factor by region (top SSP) -- duration-independent.
+#   (c) cumulative 2020-2100: short (published, +CI) vs sustained bars per SSP.
+# ---------------------------------------------------------------------
+fig_inundation_varying <- function() {
+  DIAG <- file.path(OUTPUTS, "diagnostics")
+  tf <- file.path(DIAG, "duration_sensitivity_trajectories.csv")
+  af <- file.path(DIAG, "duration_area_factor.csv")
+  if (!file.exists(tf) || !file.exists(af)) {
+    message("  (skip inundation_varying: run 21d first)"); return(invisible(FALSE)) }
+  tr <- rd(tf); afd <- rd(af)
+  ssps <- unique(tr$ssp); yrs <- sort(unique(tr$year)); yend <- max(yrs)
+  cols <- setNames(c("#1b9e77", "#e6ab02", "#d95f02", "#e7298a")[seq_along(ssps)], ssps)
+  outdir <- file.path(RPI, "figures"); if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
+  png(file.path(outdir, "inundation_varying_projection.png"), width = 2200, height = 2000, res = 220)
+  on.exit(dev.off(), add = TRUE)
+  layout(matrix(c(1, 1, 2, 3), nrow = 2, byrow = TRUE), heights = c(1.4, 1))
+  par(cex.axis = 1.15, cex.lab = 1.3, cex.main = 1.35)
+  panel <- function(l) mtext(l, side = 3, line = 0.5, adj = 0, font = 2, cex = 1.4)
+
+  # (a) rate: solid short (+ published band), dashed sustained
+  par(mar = c(4.6, 5.2, 3, 1.5))
+  yr_rng <- range(tr$short_rate_lo, tr$short_rate_hi, tr$long_rate, 0)
+  plot(NA, xlim = range(yrs), ylim = yr_rng, xlab = "Year",
+       ylab = expression("Additional wetland CH"[4] * " (Tg/yr)"), main = "")
+  panel("(a)"); abline(h = 0, col = "gray70")
+  for (s in ssps) { d <- tr[tr$ssp == s, ]; d <- d[order(d$year), ]
+    polygon(c(d$year, rev(d$year)), c(d$short_rate_lo, rev(d$short_rate_hi)),
+            col = adjustcolor(cols[s], 0.12), border = NA)
+    lines(d$year, d$short_rate, col = cols[s], lwd = 3)
+    lines(d$year, d$long_rate,  col = cols[s], lwd = 2.5, lty = 2) }
+  legend("topleft", legend = ssps, col = cols, lwd = 3, bty = "n", cex = 1.1)
+  legend("bottomright", legend = c("Short (SPEI1)", "Sustained (SPEI48)"),
+         lty = c(1, 2), lwd = c(3, 2.5), col = "gray30", bty = "n", cex = 1.05)
+
+  # (b) inundation area factor by region (top SSP) -- duration-independent
+  topssp <- ssps[length(ssps)]; ab <- afd[afd$ssp == topssp, ]; regs <- unique(ab$region)
+  rcol <- setNames(c("#1b9e77", "#e6ab02", "#7570b3", "#66a61e")[seq_along(regs)], regs)
+  par(mar = c(4.6, 5.2, 3, 1.5))
+  plot(NA, xlim = range(yrs), ylim = range(ab$area_factor, 1),
+       xlab = "Year", ylab = "Inundation area factor", main = "")
+  panel("(b)"); abline(h = 1, col = "gray70")
+  for (rg in regs) { a1 <- ab[ab$region == rg, ]; a1 <- a1[order(a1$year), ]
+    lines(a1$year, a1$area_factor, col = rcol[rg], lwd = 3) }
+  legend("bottomleft", legend = regs, col = rcol, lwd = 3, bty = "n", cex = 1.1)
+
+  # (c) cumulative short (published, +CI) vs sustained
+  e <- tr[tr$year == yend, ]; e <- e[match(ssps, e$ssp), ]
+  M <- rbind(short = e$short_cum, long = e$long_cum)
+  colvec <- as.vector(rbind(cols[ssps], adjustcolor(cols[ssps], 0.45)))
+  yl <- range(0, e$short_cum_lo, e$short_cum_hi, e$long_cum); yl <- yl + c(-0.08, 0.18) * diff(yl)
+  par(mar = c(6.5, 5.2, 3, 1.5))
+  bp <- barplot(M, beside = TRUE, names.arg = ssps, las = 2, ylim = yl, col = colvec,
+                border = "#333333", ylab = expression("Cumulative CH"[4] * " 2020-2100 (Tg)"), main = "")
+  abline(h = 0, col = "gray70")
+  arrows(bp[1, ], e$short_cum_lo, bp[1, ], e$short_cum_hi, angle = 90, code = 3, length = 0.045, col = "gray20")
+  text(bp[1, ], e$short_cum_hi, round(e$short_cum), pos = 3, xpd = TRUE, font = 2, cex = 0.9)
+  text(bp[2, ], pmax(e$long_cum, 0), round(e$long_cum), pos = 3, xpd = TRUE, cex = 0.9, col = "gray30")
+  legend("topleft", legend = c("Short (SPEI1)", "Sustained (SPEI48)"),
+         fill = c("gray25", adjustcolor("gray25", 0.45)), border = "#333333", bty = "n", cex = 1.0)
+  panel("(c)")
+  invisible(TRUE)
+}
+
+# ---------------------------------------------------------------------
 # Run everything
 # ---------------------------------------------------------------------
 message("Building figure-only CSVs in R ...")
@@ -845,7 +1136,8 @@ figs <- list(fig1 = fig1, fig2 = fig2, fig3 = fig3, fig4 = fig4, fig5 = fig5, fi
              fig6b = function() fig6b("fig6b_projection_uncertainty.png"),
              fig6_results = function() fig6b("fig6_projection_results.png"),
              fig7_continent = fig7_continent, fig7_regional = fig7_regional,
-             fig7_choropleth = fig7_choropleth, fig8 = fig8, fig9 = fig9)
+             fig7_choropleth = fig7_choropleth, fig8 = fig8, fig9 = fig9,
+             fig_inundation_varying = fig_inundation_varying)
 
 message("Drawing figures ...")
 for (nm in names(figs)) {

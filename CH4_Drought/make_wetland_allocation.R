@@ -56,6 +56,13 @@ setc("South America", LONm >= -93 & LONm <= -33 & LATm >= -56 & LATm <= 13)
 setc("Oceania",       LONm >= 110 & LONm <= 180 & LATm >= -50 & LATm <= -11)
 setc("Asia",          LONm >= 40  & LONm <= 180 & LATm >= -11 & LATm <= 78)
 
+# Russia = Europe convention: keep all of boreal Eurasia (essentially the West
+# Siberian Lowland and the rest of Russia north of 50 N, the world's largest
+# boreal peatland complex) with Europe rather than Asia. This only moves area
+# WITHIN the boreal band, so band shares -- and every band-weighted projection --
+# are unchanged; it only reassigns the continent split used by Figure 7.
+cont[cont == "Asia" & band == "Boreal"] <- "Europe"
+
 # continent x band area, emission-weighted by BAND_FLUX, normalised to sum 1
 alloc <- matrix(0, length(CONTS), length(BANDS), dimnames = list(CONTS, BANDS))
 for (c in CONTS) for (b in BANDS)
