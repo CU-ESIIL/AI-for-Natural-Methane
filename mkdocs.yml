@@ -26,8 +26,8 @@ nav:
        - Microbial Processes: resources/subWG_4.md
   - Guidelines for Intellectual Contributions and Credit: resources/WG_guideline.md
   - Resources:
-       - Code of Conduct: resources/code-of-conduct.md
-       - Participant agreement: resources/participant_agreement.md
+       #- Code of Conduct: resources/code-of-conduct.md
+       #- Participant agreement: resources/participant_agreement.md
        - ESIIL training: resources/esiil_training.md
        - Markdown: resources/markdown_basics.md
        - Cyverse: resources/cyverse_basics.md
